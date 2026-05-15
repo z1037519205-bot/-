@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tooltip 测试</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; padding: 40px; }
+        
+        /* 字段说明 tooltip */
+        [data-tip] { 
+            position: relative; 
+            cursor: help;
+            border-bottom: 1px dashed rgba(59, 130, 246, 0.5);
+        }
+        [data-tip]::after {
+            content: attr(data-tip);
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%) scale(0.95);
+            background: linear-gradient(135deg, rgba(17,24,39,0.98) 0%, rgba(31,41,55,0.98) 100%);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 1.7;
+            padding: 10px 14px;
+            border-radius: 8px;
+            white-space: pre-line;
+            min-width: 260px;
+            max-width: 400px;
+            text-align: left;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 99999;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+        [data-tip]:hover::after { 
+            opacity: 1; 
+            visibility: visible;
+            transform: translateX(-50%) scale(1);
+        }
+        [data-tip]::before {
+            content: '';
+            position: absolute;
+            bottom: calc(100% + 4px);
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: rgba(17,24,39,0.98);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+            z-index: 99999;
+        }
+        [data-tip]:hover::before {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* 表格th中的tooltip特殊样式 */
+        th [data-tip] {
+            border-bottom: none;
+            display: inline-block;
+        }
+        th [data-tip]:hover {
+            color: #3b82f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-2xl font-bold mb-8">Tooltip 效果测试</h1>
+        
+        <!-- 测试1：普通文本 -->
+        <div class="bg-white p-6 rounded-lg shadow mb-6">
+            <h2 class="text-lg font-semibold mb-4">测试1：普通文本</h2>
+            <p>鼠标悬停在 <span data-tip="字段：评分&#10;含义：原始成绩按《国家学生体质健康标准》折算的百分制分数&#10;计算：score + itemCode + scoreSort → 查本地评分标准表&#10;来源：本平台计算字段；依赖接口字段 score, itemCode, item/list.scoreSort&#10;说明：需本平台维护评分标准表（按年级/性别/项目）">评分</span> 上查看效果</p>
+        </div>
+        
+        <!-- 测试2：表格中的tooltip -->
+        <div class="bg-white p-6 rounded-lg shadow mb-6">
+            <h2 class="text-lg font-semibold mb-4">测试2：表格中的tooltip</h2>
+            <table class="w-full border-collapse">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase border-b">
+                            <span data-tip="字段：姓名&#10;含义：学生姓名&#10;来源：接口 sync-sport-result&#10;字段名：testerName">姓名</span>
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase border-b">
+                            <span data-tip="字段：评分&#10;含义：原始成绩按《国家学生体质健康标准》折算的百分制分数&#10;计算：score + itemCode + scoreSort → 查本地评分标准表&#10;来源：本平台计算字段；依赖接口字段 score, itemCode, item/list.scoreSort&#10;说明：需本平台维护评分标准表（按年级/性别/项目）">评分</span>
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase border-b">
+                            <span data-tip="字段：评定&#10;含义：评分对应的等级（优秀/良好/及格/不及格）&#10;计算：评分 → 查评分标准表等级区间&#10;来源：本平台计算字段；依赖评分结果&#10;说明：优秀≥90，良好≥80，及格≥60，不及格<60">评定</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y">
+                    <tr>
+                        <td class="px-4 py-3">张三</td>
+                        <td class="px-4 py-3">85</td>
+                        <td class="px-4 py-3">良好</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- 测试3：统计卡片 -->
+        <div class="bg-white p-6 rounded-lg shadow mb-6">
+            <h2 class="text-lg font-semibold mb-4">测试3：统计卡片</h2>
+            <div class="grid grid-cols-3 gap-4">
+                <div class="p-4 border rounded-lg">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-sm font-medium text-gray-700" data-tip="字段：测试人数&#10;含义：统计周期内产生过测试记录的去重学生数&#10;计算：COUNT(DISTINCT testerNumber) WHERE createdDate IN 统计周期 AND scoreEnable=true&#10;来源：本平台计算字段；依赖接口字段 testerNumber, createdDate, scoreEnable&#10;说明：按筛选条件（学年/日期/模式）聚合">测试人数</span>
+                    </div>
+                    <div class="text-2xl font-bold">533人</div>
+                </div>
+                <div class="p-4 border rounded-lg">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-sm font-medium text-gray-700" data-tip="字段：成绩合格率&#10;含义：评分≥60分的有效成绩占比&#10;计算：COUNT(评分≥60 AND scoreEnable=true) / COUNT(scoreEnable=true) × 100%&#10;来源：本平台计算字段；依赖接口字段 score, scoreEnable + 本地评分标准表&#10;说明：需先将原始成绩折算为评分，再统计合格率">成绩合格率</span>
+                    </div>
+                    <div class="text-2xl font-bold">69%</div>
+                </div>
+                <div class="p-4 border rounded-lg">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-sm font-medium text-gray-700" data-tip="字段：成绩平均分&#10;含义：所有有效成绩的平均分数（百分制）&#10;计算：AVG(评分) WHERE scoreEnable=true&#10;来源：本平台计算字段；依赖接口字段 score, scoreEnable + 本地评分标准表&#10;说明：需先将原始成绩折算为评分，再求平均">成绩平均分</span>
+                    </div>
+                    <div class="text-2xl font-bold">60分</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h3 class="font-semibold text-blue-800 mb-2">使用说明</h3>
+            <ul class="text-sm text-blue-700 space-y-1">
+                <li>✅ 鼠标悬停在带蓝色虚线下划线的文本上</li>
+                <li>✅ 应该能看到黑底的tooltip提示框</li>
+                <li>✅ tooltip包含：字段名、含义、计算方式、来源、说明</li>
+                <li>✅ 使用白色小三角指向源文本</li>
+                <li>✅ 有平滑的淡入淡出动画效果</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

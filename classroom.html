@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧体育管理后台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        [data-tip]{position:relative;cursor:help}
+        [data-tip]::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1f2937;color:#fff;padding:8px 12px;border-radius:6px;font-size:12px;line-height:1.6;white-space:pre-line;min-width:240px;max-width:380px;text-align:left;opacity:0;pointer-events:none;transition:opacity .15s;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+        [data-tip]:hover::after{opacity:1}
+        [data-tip-side="bottom"]::after{bottom:auto;top:calc(100% + 8px)}
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
+            <div class="p-6 border-b border-gray-200">
+                <h1 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                    <i data-lucide="activity" class="w-6 h-6 text-blue-600"></i>
+                    <span>智慧体育后台</span>
+                </h1>
+                <p class="text-xs text-gray-500 mt-1">实验中学</p>
+            </div>
+            <nav class="flex-1 min-h-0 overflow-y-auto p-4 space-y-1">
+                <div class="px-2 mb-2">
+                    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider">智慧体育</div>
+                </div>
+                <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition" data-tab="exercise">
+                    <i data-lucide="activity" class="w-5 h-5"></i>
+                    <span>智慧体锻</span>
+                </a>
+                <a href="records.html" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition" data-tab="test">
+                    <i data-lucide="clipboard-list" class="w-5 h-5"></i>
+                    <span>智慧体测</span>
+                </a>
+                <a href="phone-demo.html" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition" data-tab="demo">
+                    <i data-lucide="smartphone" class="w-5 h-5"></i>
+                    <span>手机演示</span>
+                </a>
+            </nav>
+            <div class="shrink-0 p-4 border-t border-gray-200">
+
+            </div>
+        </aside>
+
+        <main class="flex-1 overflow-y-auto">
+            <header class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">课堂实时监控</h2>
+                    <p class="text-sm text-gray-500 mt-1">实时监控所有进行中的体育课堂</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded-lg" data-tip-side="bottom" data-tip="字段：当前进行中的课堂数量&#10;含义：本时段内仍在采集成绩的课堂个数&#10;计算：COUNT(DISTINCT grade+clazz) WHERE 最近 5 分钟内有新成绩入库&#10;来源：第三方设备实时回传的测试成绩聚合&#10;说明：第三方设备无课堂级状态，本字段由「最近 5 分钟有无新成绩」推断；上下课时间未到但已无新成绩则视为已结束">
+                        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        <span class="text-sm font-medium">4个课堂测试中</span>
+                    </div>
+                    <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                        <i data-lucide="refresh-cw" class="w-4 h-4 inline mr-1"></i>
+                        刷新
+                    </button>
+                </div>
+            </header>
+
+            <div class="p-8 space-y-6">
+                <!-- 接口开销提示 -->
+                <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-start gap-2 text-xs text-amber-800">
+                    <i data-lucide="info" class="w-4 h-4 flex-shrink-0 mt-0.5"></i>
+                    <div>
+                        <span class="font-medium">数据口径说明：</span>“已完成/平均分”基于已同步的测试成绩聚合，应测人数来自校方班级名册；第三方设备不回传课堂微状态，“进行中/已结束”由“最近 5 分钟是否有新成绩”判定。
+                    </div>
+                </div>
+
+                <!-- 当前时间段进行中的课堂 -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                        <i data-lucide="clock" class="w-5 h-5 text-blue-600"></i>
+                        <span>当前进行中 (09:00-09:45)</span>
+                        <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">第2节课</span>
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- 课堂卡片1 -->
+                        <div class="bg-white rounded-xl border-2 border-blue-500 shadow-lg">
+                            <div class="p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-bold text-gray-800 text-lg">七年级1班</h4>
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full flex items-center gap-1">
+                                        <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                                        测试中
+                                    </span>
+                                </div>
+                                <div class="flex items-center gap-4 text-sm text-gray-600">
+                                    <span class="flex items-center gap-1">
+                                        <i data-lucide="target" class="w-4 h-4"></i>
+                                        50米跑、立定跳远
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <div class="grid grid-cols-2 gap-3 mb-3">
+                                    <div class="text-center p-2 bg-gray-50 rounded-lg">
+                                        <div class="text-2xl font-bold text-gray-800">45</div>
+                                        <div class="text-xs text-gray-500" data-tip="字段：班级人数（应测人数）&#10;含义：该课堂应参加测试的班级在册学生总数&#10;计算：COUNT(*) FROM student WHERE grade+clazz = X AND 状态 = 在校&#10;来源：校方班级名册（学籍系统同步）&#10;说明：包含请假、见习学生；分母固定，不会因当日缺勤减少">班级人数</div>
+                                    </div>
+                                    <div class="text-center p-2 bg-blue-50 rounded-lg">
+                                        <div class="text-2xl font-bold text-blue-600">38</div>
+                                        <div class="text-xs text-gray-500" data-tip="字段：已完成测试人数&#10;含义：本节课已完成全部应测项目并产生有效成绩的学生数&#10;计算：COUNT(DISTINCT testerNumber) WHERE class_session=本节课 AND 项目数=应测项目数 AND 成绩有效&#10;来源：第三方设备回传的测试成绩&#10;说明：缺测一个项目不计入；成绩被判定为无效（设备异常/重测）也不计入">已完成</div>
+                                    </div>
+                                    <div class="text-center p-2 bg-green-50 rounded-lg">
+                                        <div class="text-2xl font-bold text-green-600">5</div>
+                                        <div class="text-xs text-gray-500" data-tip="字段：进行中人数&#10;含义：当前正在测试、尚未完成全部项目的学生数&#10;计算：已开始第 1 个项目 - 已完成全部项目（最近 5 分钟内有新成绩入库）&#10;来源：第三方设备实时心跳成绩&#10;说明：实时刷新，与设备回传频率有关，可能滞后 10-30 秒">进行中</div>
+                                    </div>
+                                    <div class="text-center p-2 bg-purple-50 rounded-lg">
+                                        <div class="text-2xl font-bold text-purple-600">86.5</div>
+                                        <div class="text-xs text-gray-500" data-tip="字段：班级当前平均分&#10;含义：本节课已产生有效成绩的所有项目平均分（实时累计）&#10;计算：AVG(评分标准转换后的分数)，仅纳入已完成的成绩&#10;来源：测试成绩 + 本地评分标准表&#10;说明：测试初期样本量小波动大；不同项目按 100 分制各自换算后平均">平均分</div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="flex items-center justify-between text-xs text-gray-600 mb-1">
+                                        <span>完成进度</span>
+                                        <span>84%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-blue-600 h-2 rounded-full" style="width: 84%"></div>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="showClassMonitor('七年级1班', '设备A-01', '50米跑、立定跳远')" class="flex-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium">
+                                        实时监控
+                                    </button>
+                                    <button onclick="showClassDetail('七年级1班')" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm">
+                                        查看详情
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 课堂卡片2 -->
+                        <div class="bg-white rounded-xl border-2 border-blue-500 shadow-lg">
+                            <div class="p-4 border-b border-gray-200 bg-gradient-to-r from-green-50 to-blue-50">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-bold text-gray-800 text-lg">七年级2班</h4>
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full flex items-center gap-1">
+                                        <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                                        测试中
+                                    </span>
+                                </div>
+                                <div class="flex items-center gap-4 text-sm text-gray-600">
+                                    <span class="flex items-center gap-1">
+                                        <i data-lucide="target" class="w-4 h-4"></i>
+                                        跳绳、仰卧起坐
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <div class="grid grid-cols-2 gap-3 mb-3">
+                                    <div class="text-center p-2 bg-gray-50 rounded-lg">
+                                        <div class="text-2xl font-bold text-gray-800">43</div>
+                                        <div class="text-xs text-gray-500" data-tip="字段：班级人数（应测人数）&#10;含义：该课堂应参加测试的班级在册学生总数&#10;计算：COUNT(*) FROM student WHERE grade+clazz = X AND 状态 = 在校&#10;来源：校方班级名册（学籍系统同步）&#10;说明：包含请假、见习学生；分母固定，不会因当日缺勤减少">班级人数</div>
+                                    </div>
+                                    <div class="text-center p-2 bg-blue-50 rounded-lg">
+                                        <div class="text-2xl font-bold text-blue-600">40</div>
+                                        <div class="text-xs text-gray-500" data-tip="字段：已完成测试人数&#10;含义：本节课已完成全部应测项目并产生有效成绩的学生数&#10;计算：COUNT(DISTINCT testerNumber) WHERE class_session=本节课 AND 项目数=应测项目数 AND 成绩有效&#10;来源：第三方设备回传的测试成绩&#10;说明：缺测一个项目不计入；成绩被判定为无效（设备异常/重测）也不计入">已完成</div>
+                                    </div>
+                                    <div class="text-center p-2 bg-green-50 rounded-lg">
+                                        <div class="text-2xl font-bold text-green-600">3</div>
+                                        <div class="text-xs text-gray-500" data-tip="字段：进行中人数&#10;含义：当前正在测试、尚未完成全部项目的学生数&#10;计算：已开始第 1 个项目 - 已完成全部项目（最近 5 分钟内有新成绩入库）&#10;来源：第三方设备实时心跳成绩&#10;说明：实时刷新，与设备回传频率有关，可能滞后 10-30 秒">进行中</div>
+                                    </div>
+                                    <div class="text-center p-2 bg-purple-50 rounded-lg">
+                                        <div class="text-2xl font-bold text-purple-600">88.2</div>
+                                        <div class="text-xs text-gray-500" data-tip="字段：班级当前平均分&#10;含义：本节课已产生有效成绩的所有项目平均分（实时累计）&#10;计算：AVG(评分标准转换后的分数)，仅纳入已完成的成绩&#10;来源：测试成绩 + 本地评分标准表&#10;说明：测试初期样本量小波动大；不同项目按 100 分制各自换算后平均">平均分</div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="flex items-center justify-between text-xs text-gray-600 mb-1">
+                                        <span>完成进度</span>
+                                        <span>93%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-green-600 h-2 rounded-full" style="width: 93%"></div>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="showClassMonitor('七年级2班', '设备B-02', '跳绳、仰卧起坐')" class="flex-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium">
+                                        实时监控
+                                    </button>
+                                    <button onclick="showClassDetail('七年级2班')" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm">
+                                        查看详情
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 课堂卡片3 -->
+                        <div class="bg-white rounded-xl border-2 border-orange-500 shadow-lg">
+                            <div class="p-4 border-b border-gray-200 bg-gradient-to-r from-orange-50 to-red-50">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-bold text-gray-800 text-lg">八年级1班</h4>
+                                    <span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs font-medium rounded-full flex items-center gap-1">
+                                        <div class="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse"></div>
+                                        刚开始
+                                    </span>
+                                </div>
+                                <div class="flex items-center gap-4 text-sm text-gray-600">
+                                    <span class="flex items-center gap-1">
+                                        <i data-lucide="target" class="w-4 h-4"></i>
+                                        800米跑、实心球
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <div class="grid grid-cols-2 gap-3 mb-3">
+                                    <div class="text-center p-2 bg-gray-50 rounded-lg">
+                                        <div class="text-2xl font-bold text-gray-800">46</div>
+                                        <div class="text-xs text-gray-500" data-tip="字段：班级人数（应测人数）&#10;含义：该课堂应参加测试的班级在册学生总数&#10;计算：COUNT(*) FROM student WHERE grade+clazz = X AND 状态 = 在校&#10;来源：校方班级名册（学籍系统同步）&#10;说明：包含请假、见习学生；分母固定，不会因当日缺勤减少">班级人数</div>
+                                    </div>
+                                    <div class="text-center p-2 bg-blue-50 rounded-lg">
+                                        <div class="text-2xl font-bold text-blue-600">8</div>
+                                        <div class="text-xs text-gray-500" data-tip="字段：已完成测试人数&#10;含义：本节课已完成全部应测项目并产生有效成绩的学生数&#10;计算：COUNT(DISTINCT testerNumber) WHERE class_session=本节课 AND 项目数=应测项目数 AND 成绩有效&#10;来源：第三方设备回传的测试成绩&#10;说明：缺测一个项目不计入；成绩被判定为无效（设备异常/重测）也不计入">已完成</div>
+                                    </div>
+                                    <div class="text-center p-2 bg-green-50 rounded-lg">
+                                        <div class="text-2xl font-bold text-green-600">12</div>
+                                        <div class="text-xs text-gray-500" data-tip="字段：进行中人数&#10;含义：当前正在测试、尚未完成全部项目的学生数&#10;计算：已开始第 1 个项目 - 已完成全部项目（最近 5 分钟内有新成绩入库）&#10;来源：第三方设备实时心跳成绩&#10;说明：实时刷新，与设备回传频率有关，可能滞后 10-30 秒">进行中</div>
+                                    </div>
+                                    <div class="text-center p-2 bg-purple-50 rounded-lg">
+                                        <div class="text-2xl font-bold text-purple-600">84.8</div>
+                                        <div class="text-xs text-gray-500" data-tip="字段：班级当前平均分&#10;含义：本节课已产生有效成绩的所有项目平均分（实时累计）&#10;计算：AVG(评分标准转换后的分数)，仅纳入已完成的成绩&#10;来源：测试成绩 + 本地评分标准表&#10;说明：测试初期样本量小波动大；不同项目按 100 分制各自换算后平均">平均分</div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="flex items-center justify-between text-xs text-gray-600 mb-1">
+                                        <span>完成进度</span>
+                                        <span>17%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-orange-600 h-2 rounded-full" style="width: 17%"></div>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="showClassMonitor('八年级1班', '设备C-01', '800米跑、实心球')" class="flex-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium">
+                                        实时监控
+                                    </button>
+                                    <button onclick="showClassDetail('八年级1班')" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm">
+                                        查看详情
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 课堂卡片4 -->
+                        <div class="bg-white rounded-xl border-2 border-blue-500 shadow-lg">
+                            <div class="p-4 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-bold text-gray-800 text-lg">八年级2班</h4>
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full flex items-center gap-1">
+                                        <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                                        测试中
+                                    </span>
+                                </div>
+                                <div class="flex items-center gap-4 text-sm text-gray-600">
+                                    <span class="flex items-center gap-1">
+                                        <i data-lucide="target" class="w-4 h-4"></i>
+                                        引体向上、坐位体前屈
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <div class="grid grid-cols-2 gap-3 mb-3">
+                                    <div class="text-center p-2 bg-gray-50 rounded-lg">
+                                        <div class="text-2xl font-bold text-gray-800">44</div>
+                                        <div class="text-xs text-gray-500" data-tip="字段：班级人数（应测人数）&#10;含义：该课堂应参加测试的班级在册学生总数&#10;计算：COUNT(*) FROM student WHERE grade+clazz = X AND 状态 = 在校&#10;来源：校方班级名册（学籍系统同步）&#10;说明：包含请假、见习学生；分母固定，不会因当日缺勤减少">班级人数</div>
+                                    </div>
+                                    <div class="text-center p-2 bg-blue-50 rounded-lg">
+                                        <div class="text-2xl font-bold text-blue-600">35</div>
+                                        <div class="text-xs text-gray-500" data-tip="字段：已完成测试人数&#10;含义：本节课已完成全部应测项目并产生有效成绩的学生数&#10;计算：COUNT(DISTINCT testerNumber) WHERE class_session=本节课 AND 项目数=应测项目数 AND 成绩有效&#10;来源：第三方设备回传的测试成绩&#10;说明：缺测一个项目不计入；成绩被判定为无效（设备异常/重测）也不计入">已完成</div>
+                                    </div>
+                                    <div class="text-center p-2 bg-green-50 rounded-lg">
+                                        <div class="text-2xl font-bold text-green-600">6</div>
+                                        <div class="text-xs text-gray-500" data-tip="字段：进行中人数&#10;含义：当前正在测试、尚未完成全部项目的学生数&#10;计算：已开始第 1 个项目 - 已完成全部项目（最近 5 分钟内有新成绩入库）&#10;来源：第三方设备实时心跳成绩&#10;说明：实时刷新，与设备回传频率有关，可能滞后 10-30 秒">进行中</div>
+                                    </div>
+                                    <div class="text-center p-2 bg-purple-50 rounded-lg">
+                                        <div class="text-2xl font-bold text-purple-600">87.3</div>
+                                        <div class="text-xs text-gray-500" data-tip="字段：班级当前平均分&#10;含义：本节课已产生有效成绩的所有项目平均分（实时累计）&#10;计算：AVG(评分标准转换后的分数)，仅纳入已完成的成绩&#10;来源：测试成绩 + 本地评分标准表&#10;说明：测试初期样本量小波动大；不同项目按 100 分制各自换算后平均">平均分</div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="flex items-center justify-between text-xs text-gray-600 mb-1">
+                                        <span>完成进度</span>
+                                        <span>80%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-blue-600 h-2 rounded-full" style="width: 80%"></div>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="showClassMonitor('八年级2班', '设备D-01', '引体向上、坐位体前屈')" class="flex-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium">
+                                        实时监控
+                                    </button>
+                                    <button onclick="showClassDetail('八年级2班')" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm">
+                                        查看详情
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 其他时间段课堂 -->
+                <div class="mt-8">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                        <i data-lucide="calendar" class="w-5 h-5 text-gray-600"></i>
+                        <span>其他时间段课堂</span>
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-white rounded-xl p-4 border border-gray-200 opacity-60">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-semibold text-gray-800">第1节课</h4>
+                                <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded">已完成</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mb-2">08:00 - 08:45</p>
+                            <div class="text-sm text-gray-600 space-y-1">
+                                <div>七年级3班 - 跳绳</div>
+                                <div>九年级1班 - 50米跑</div>
+                            </div>
+                            <button onclick="showClassDetail('第1节课 - 七年级3班、九年级1班')" class="mt-3 w-full px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm">
+                                查看数据
+                            </button>
+                        </div>
+
+                        <div class="bg-white rounded-xl p-4 border border-gray-200">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-semibold text-gray-800">第3节课</h4>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded">未开始</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mb-2">10:00 - 10:45</p>
+                            <div class="text-sm text-gray-600 space-y-1">
+                                <div>七年级1班 - 仰卧起坐</div>
+                                <div>八年级3班 - 立定跳远</div>
+                            </div>
+                            <button onclick="showClassDetail('第3节课 - 七年级1班、八年级3班')" class="mt-3 w-full px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm">
+                                查看详情
+                            </button>
+                        </div>
+
+                        <div class="bg-white rounded-xl p-4 border border-gray-200">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-semibold text-gray-800">第4节课</h4>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded">未开始</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mb-2">11:00 - 11:45</p>
+                            <div class="text-sm text-gray-600 space-y-1">
+                                <div>七年级2班 - 800米跑</div>
+                                <div>九年级2班 - 实心球</div>
+                            </div>
+                            <button onclick="showClassDetail('第4节课 - 七年级2班、九年级2班')" class="mt-3 w-full px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm">
+                                查看详情
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 今日校内锻炼活跃情况 -->
+                <div class="bg-white rounded-xl p-6 border border-gray-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                            <i data-lucide="flame" class="w-5 h-5 text-orange-600"></i>
+                            <span>今日校内锻炼活跃情况</span>
+                        </h3>
+                        <a href="records.html?tab=exercise" class="text-orange-600 hover:text-orange-700 text-sm font-medium flex items-center gap-1">
+                            <span>查看全部打卡记录</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </a>
+                    </div>
+                    <div class="text-xs text-gray-500 mb-4">课间、体育课自由练习段、社团训练等学生自主打卡数据，不产生成绩等级，只统计次数/参与度</div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <div class="border border-orange-100 bg-orange-50/50 rounded-lg p-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center"><i data-lucide="users" class="w-4 h-4 text-orange-600"></i></div>
+                                <div class="text-xs text-gray-500">今日参与</div>
+                            </div>
+                            <div class="text-2xl font-bold text-gray-800" data-tip="字段：今日参与人数 / 总打卡人次&#10;含义：去重后参与的学生人数（人）与累计打卡次数（人次）&#10;计算：参与人数 = COUNT(DISTINCT testerNumber)；人次 = COUNT(*) FROM exercise_log WHERE 日期 = 今日&#10;来源：学生在 App 端自主打卡的锻炼日志&#10;说明：打卡为校内自由练习/课间/社团时段；不产生成绩等级，只统计次数；同一学生多次打卡只计 1 人但记多次">180 <span class="text-sm text-gray-400 font-normal">人</span></div>
+                            <div class="text-xs text-gray-500 mt-1">共 542 人次</div>
+                        </div>
+                        <div class="border border-orange-100 bg-orange-50/50 rounded-lg p-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center"><i data-lucide="trophy" class="w-4 h-4 text-red-600"></i></div>
+                                <div class="text-xs text-gray-500">Top 项目</div>
+                            </div>
+                            <div class="text-xl font-bold text-gray-800" data-tip="字段：今日 Top 锻炼项目&#10;含义：今日全校所有锻炼项目中累计打卡次数最多的一项&#10;计算：GROUP BY project ORDER BY COUNT(*) DESC LIMIT 1，仅看今日打卡日志&#10;来源：学生 App 锻炼日志&#10;说明：括号中显示 Top 项目当日累计次数；遇到并列时按字母序优先">跳绳</div>
+                            <div class="text-xs text-gray-500 mt-1">2,345 次</div>
+                        </div>
+                        <div class="border border-orange-100 bg-orange-50/50 rounded-lg p-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-8 h-8 rounded-lg bg-yellow-100 flex items-center justify-center"><i data-lucide="award" class="w-4 h-4 text-yellow-600"></i></div>
+                                <div class="text-xs text-gray-500">活跃班级</div>
+                            </div>
+                            <div class="text-xl font-bold text-gray-800" data-tip="字段：今日最活跃班级&#10;含义：今日全校所有班级中打卡人次最多的班级&#10;计算：GROUP BY grade+clazz ORDER BY COUNT(*) DESC LIMIT 1&#10;来源：学生 App 锻炼日志聚合&#10;说明：以「人次」排名，便于体现整体活跃度；如需「人均」请看下方班级活跃卡片">七年级1班</div>
+                            <div class="text-xs text-gray-500 mt-1">120 人次 · 45 人参与</div>
+                        </div>
+                        <div class="border border-red-200 bg-red-50/50 rounded-lg p-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center"><i data-lucide="alert-triangle" class="w-4 h-4 text-red-600"></i></div>
+                                <div class="text-xs text-gray-500">冷清班级</div>
+                            </div>
+                            <div class="text-xl font-bold text-gray-800" data-tip="字段：今日冷清班级（预警）&#10;含义：连续多日打卡量异常偏低、需要班主任介入提醒的班级&#10;计算：参与率 < 20% 且最近打卡时间 ≥ 3 天前；按冷清程度排序取最严重的一个&#10;来源：学生 App 锻炼日志 + 班级名册&#10;说明：用于催促班主任在群里提醒；点击右下「提醒班主任」按钮可一键发送站内消息（演示）">九年级2班</div>
+                            <div class="text-xs text-red-500 mt-1">近 3 日未打卡</div>
+                        </div>
+                    </div>
+
+                    <!-- 班级活跃卡片列表 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="border border-gray-200 rounded-lg p-4 hover:border-orange-300 hover:shadow-sm transition">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-sm font-semibold text-gray-800">七年级1班</span>
+                                <span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded">高活跃</span>
+                            </div>
+                            <div class="flex items-center justify-between text-sm text-gray-600 mb-2">
+                                <span>人次</span><span class="font-semibold text-gray-800">120</span>
+                            </div>
+                            <div class="flex items-center justify-between text-sm text-gray-600 mb-2">
+                                <span>参与</span><span class="font-semibold text-gray-800">45 / 45</span>
+                            </div>
+                            <div class="flex items-center justify-between text-sm text-gray-600 mb-3">
+                                <span>人均</span><span class="font-semibold text-gray-800">2.67 次</span>
+                            </div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-2 py-0.5 bg-red-50 text-red-600 text-xs rounded">跳绳 ×42</span>
+                                <span class="px-2 py-0.5 bg-orange-50 text-orange-600 text-xs rounded">仰卧起坐 ×35</span>
+                                <span class="px-2 py-0.5 bg-yellow-50 text-yellow-700 text-xs rounded">深蹲 ×28</span>
+                            </div>
+                        </div>
+                        <div class="border border-gray-200 rounded-lg p-4 hover:border-orange-300 hover:shadow-sm transition">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-sm font-semibold text-gray-800">八年级3班</span>
+                                <span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded">高活跃</span>
+                            </div>
+                            <div class="flex items-center justify-between text-sm text-gray-600 mb-2">
+                                <span>人次</span><span class="font-semibold text-gray-800">98</span>
+                            </div>
+                            <div class="flex items-center justify-between text-sm text-gray-600 mb-2">
+                                <span>参与</span><span class="font-semibold text-gray-800">42 / 46</span>
+                            </div>
+                            <div class="flex items-center justify-between text-sm text-gray-600 mb-3">
+                                <span>人均</span><span class="font-semibold text-gray-800">2.33 次</span>
+                            </div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-2 py-0.5 bg-red-50 text-red-600 text-xs rounded">跳绳 ×30</span>
+                                <span class="px-2 py-0.5 bg-green-50 text-green-600 text-xs rounded">开合跳 ×22</span>
+                                <span class="px-2 py-0.5 bg-blue-50 text-blue-600 text-xs rounded">高抬腿 ×18</span>
+                            </div>
+                        </div>
+                        <div class="border border-gray-200 rounded-lg p-4 hover:border-orange-300 hover:shadow-sm transition">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-sm font-semibold text-gray-800">九年级2班</span>
+                                <span class="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-medium rounded">冷清</span>
+                            </div>
+                            <div class="flex items-center justify-between text-sm text-gray-600 mb-2">
+                                <span>人次</span><span class="font-semibold text-gray-800">12</span>
+                            </div>
+                            <div class="flex items-center justify-between text-sm text-gray-600 mb-2">
+                                <span>参与</span><span class="font-semibold text-gray-800">8 / 44</span>
+                            </div>
+                            <div class="flex items-center justify-between text-sm text-gray-600 mb-3">
+                                <span>最后打卡</span><span class="font-semibold text-red-600">3 天前</span>
+                            </div>
+                            <button class="w-full py-1.5 text-xs border border-orange-300 text-orange-600 rounded hover:bg-orange-50">提醒班主任</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 运动视频回放（ResultVideoAddEvent 推送） -->
+                <div class="bg-white rounded-xl p-6 border border-gray-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800 flex items-center gap-2" data-tip="模块：运动视频回放（ResultVideoAddEvent）&#10;含义：第三方设备录制的学生测试 / 锻炼动作视频，回传后供教师与学生回看&#10;计算：以 ResultVideoAddEvent 推送时间倒序展示最近 N 条；带「新」徽章为最近 30 分钟入库的&#10;来源：第三方设备 → 平台事件总线 → videoUrl 字段&#10;说明：视频不算成绩、仅供查看；AI 点评徽章表示已自动识别动作规范；点击卡片打开播放器，支持慢放、逐帧、批注">
+                            <i data-lucide="video" class="w-5 h-5 text-purple-600"></i>
+                            <span>运动视频回放</span>
+                            <span class="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs font-medium rounded">AI动作分析</span>
+                        </h3>
+                        <div class="flex items-center gap-2">
+                            <select class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm">
+                                <option>全部班级</option>
+                                <option>七年级1班</option>
+                                <option>七年级2班</option>
+                                <option>八年级1班</option>
+                            </select>
+                            <select class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm">
+                                <option>全部项目</option>
+                                <option>50米跑</option>
+                                <option>立定跳远</option>
+                                <option>实心球</option>
+                                <option>引体向上</option>
+                            </select>
+                            <button class="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
+                                <i data-lucide="list" class="w-4 h-4"></i>查看全部
+                            </button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- 视频1 -->
+                        <div class="group cursor-pointer" onclick="playVideo('张小明 - 50米跑')">
+                            <div class="relative aspect-video rounded-lg overflow-hidden bg-gradient-to-br from-blue-400 to-purple-500">
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center group-hover:scale-110 transition">
+                                        <i data-lucide="play" class="w-6 h-6 text-purple-600 ml-1"></i>
+                                    </div>
+                                </div>
+                                <span class="absolute top-2 left-2 px-2 py-0.5 bg-red-500 text-white text-xs font-medium rounded flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>新
+                                </span>
+                                <span class="absolute bottom-2 right-2 px-2 py-0.5 bg-black/60 text-white text-xs rounded">00:08</span>
+                            </div>
+                            <div class="mt-2">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-sm font-medium text-gray-800">张小明</p>
+                                    <span class="text-xs text-green-600 font-semibold">7.82秒 ↑</span>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-0.5">七年级1班 · 50米跑 · 09:12</p>
+                            </div>
+                        </div>
+                        <!-- 视频2 -->
+                        <div class="group cursor-pointer" onclick="playVideo('李艺 - 立定跳远')">
+                            <div class="relative aspect-video rounded-lg overflow-hidden bg-gradient-to-br from-green-400 to-teal-500">
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center group-hover:scale-110 transition">
+                                        <i data-lucide="play" class="w-6 h-6 text-teal-600 ml-1"></i>
+                                    </div>
+                                </div>
+                                <span class="absolute top-2 left-2 px-2 py-0.5 bg-red-500 text-white text-xs font-medium rounded flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>新
+                                </span>
+                                <span class="absolute bottom-2 right-2 px-2 py-0.5 bg-black/60 text-white text-xs rounded">00:05</span>
+                            </div>
+                            <div class="mt-2">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-sm font-medium text-gray-800">李艺</p>
+                                    <span class="text-xs text-green-600 font-semibold">218cm ↑</span>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-0.5">七年级1班 · 立定跳远 · 09:10</p>
+                            </div>
+                        </div>
+                        <!-- 视频3 -->
+                        <div class="group cursor-pointer" onclick="playVideo('王磊 - 实心球')">
+                            <div class="relative aspect-video rounded-lg overflow-hidden bg-gradient-to-br from-orange-400 to-red-500">
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center group-hover:scale-110 transition">
+                                        <i data-lucide="play" class="w-6 h-6 text-red-600 ml-1"></i>
+                                    </div>
+                                </div>
+                                <span class="absolute top-2 left-2 px-2 py-0.5 bg-yellow-400 text-gray-800 text-xs font-medium rounded flex items-center gap-1">
+                                    <i data-lucide="sparkles" class="w-3 h-3"></i>AI点评
+                                </span>
+                                <span class="absolute bottom-2 right-2 px-2 py-0.5 bg-black/60 text-white text-xs rounded">00:12</span>
+                            </div>
+                            <div class="mt-2">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-sm font-medium text-gray-800">王磊</p>
+                                    <span class="text-xs text-orange-600 font-semibold">11.5m</span>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-0.5">七年级1班 · 实心球 · 09:08</p>
+                            </div>
+                        </div>
+                        <!-- 视频4 -->
+                        <div class="group cursor-pointer" onclick="playVideo('赵丽 - 引体向上')">
+                            <div class="relative aspect-video rounded-lg overflow-hidden bg-gradient-to-br from-purple-400 to-pink-500">
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center group-hover:scale-110 transition">
+                                        <i data-lucide="play" class="w-6 h-6 text-pink-600 ml-1"></i>
+                                    </div>
+                                </div>
+                                <span class="absolute bottom-2 right-2 px-2 py-0.5 bg-black/60 text-white text-xs rounded">00:15</span>
+                            </div>
+                            <div class="mt-2">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-sm font-medium text-gray-800">赵丽</p>
+                                    <span class="text-xs text-blue-600 font-semibold">12个</span>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-0.5">八年级2班 · 引体向上 · 09:05</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-3 bg-purple-50 rounded-lg flex items-center gap-2 text-xs text-purple-700">
+                        <i data-lucide="info" class="w-4 h-4 flex-shrink-0"></i>
+                        <span>视频由第三方设备自动录制并通过 <span class="font-mono font-semibold">ResultVideoAddEvent</span> 实时推送，支持教师点评与学生回看</span>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl p-6 border border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">当前时段实时数据汇总</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="text-center p-4 bg-blue-50 rounded-lg" data-tip="字段：进行中的课堂&#10;含义：本时段（如 09:00-09:45）内同时进行的课堂总数&#10;计算：COUNT(DISTINCT grade+clazz) WHERE 当前时段 IN 排课表 AND 最近 5 分钟有新成绩&#10;来源：排课表 + 测试成绩心跳&#10;说明：与页面上方进行中课堂卡片数量一致">
+                            <div class="text-3xl font-bold text-blue-600 mb-1">4</div>
+                            <div class="text-sm text-gray-600">进行中的课堂</div>
+                        </div>
+                        <div class="text-center p-4 bg-green-50 rounded-lg" data-tip="字段：参与学生总数&#10;含义：当前所有进行中课堂的应测学生人数合计&#10;计算：SUM(各课堂班级人数) 或 COUNT(DISTINCT testerNumber)，按各课堂应测名册去重相加&#10;来源：班级名册 + 排课&#10;说明：分母性质，不会因当日缺勤减少">
+                            <div class="text-3xl font-bold text-green-600 mb-1">178</div>
+                            <div class="text-sm text-gray-600">参与学生总数</div>
+                        </div>
+                        <div class="text-center p-4 bg-purple-50 rounded-lg" data-tip="字段：已完成测试人数&#10;含义：当前所有进行中课堂中已完成全部应测项目的学生数合计&#10;计算：SUM(各课堂已完成数)，去重&#10;来源：第三方设备回传成绩&#10;说明：占比 = 已完成 / 参与学生总数 = 121 / 178 ≈ 68%">
+                            <div class="text-3xl font-bold text-purple-600 mb-1">121</div>
+                            <div class="text-sm text-gray-600">已完成测试</div>
+                        </div>
+                        <div class="text-center p-4 bg-orange-50 rounded-lg" data-tip="字段：当前平均分&#10;含义：本时段所有进行中课堂、所有已完成成绩的实时整体均分&#10;计算：AVG(评分标准转换后的分数)，跨课堂跨项目整体计算&#10;来源：测试成绩 + 评分标准表&#10;说明：仅供宏观把握；不同项目混合后参考意义有限，详细分析请到「成绩分析」页">
+                            <div class="text-3xl font-bold text-orange-600 mb-1">86.7</div>
+                            <div class="text-sm text-gray-600">当前平均分</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 实时监控弹窗 -->
+    <div id="monitorModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800" id="monitorTitle">实时监控</h3>
+                    <p class="text-sm text-gray-500 mt-1" id="monitorInfo"></p>
+                </div>
+                <button onclick="closeModal('monitorModal')" class="text-gray-500 hover:text-gray-700">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="mb-4 flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            <option>全部项目</option>
+                            <option>50米跑</option>
+                            <option>立定跳远</option>
+                        </select>
+                        <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            <option>全部状态</option>
+                            <option>已完成</option>
+                            <option>进行中</option>
+                            <option>未开始</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        <span class="text-sm text-green-600 font-medium">实时更新中</span>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase" data-tip-side="bottom" data-tip="列：序号&#10;含义：当前监控列表的行号&#10;计算：按测试完成时间倒序后的行索引（1 起）&#10;来源：前端排序生成&#10;说明：仅作展示，不参与任何业务逻辑">序号</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase" data-tip-side="bottom" data-tip="列：学生&#10;含义：测试学生姓名 + 学号&#10;计算：testerNumber JOIN student 表&#10;来源：班级名册（学籍系统同步）&#10;说明：头像首字按姓名首字母自动生成；点击「详情」可弹出成绩明细">学生</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase" data-tip-side="bottom" data-tip="列：项目&#10;含义：本节课该学生测试的具体项目（如 50米跑、立定跳远）&#10;计算：record.project_name&#10;来源：测试成绩记录&#10;说明：一个学生若一节课测多个项目会产生多行">项目</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase" data-tip-side="bottom" data-tip="列：成绩&#10;含义：项目原始成绩，秒数 / 米数 / 个数&#10;计算：record.score_value，单位由项目元数据决定&#10;来源：第三方设备回传&#10;说明：未开始显示「-」；进行中显示「测试中…」；已完成显示具体数值">成绩</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase" data-tip-side="bottom" data-tip="列：状态&#10;含义：该学生该项目的当前测试状态&#10;计算：未开始 = 无任何成绩；进行中 = 已有部分成绩但未达完成条件；已完成 = 项目应测次数已满足&#10;来源：测试成绩 + 项目应测规则&#10;说明：进行中行高亮蓝底，便于快速锁定正在测试的学生">状态</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase" data-tip-side="bottom" data-tip="列：用时&#10;含义：该学生从开始测试到完成（或截至当前）的累计耗时&#10;计算：完成时间 - 开始时间；进行中显示已耗时&#10;来源：第三方设备开始/结束时间戳&#10;说明：可用于发现卡顿或弃测的学生（如长时间停留进行中状态）">用时</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase" data-tip-side="bottom" data-tip="列：操作&#10;含义：可对该条记录执行的快捷操作&#10;计算：根据状态显示「详情」按钮，弹出本人本课成绩明细&#10;来源：前端交互&#10;说明：演示原型，实际接入后会扩展「重测」「作废」「批注」等动作">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200" id="monitorTableBody">
+                            <!-- 动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 课堂详情弹窗 -->
+    <div id="detailModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-5xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800" id="detailTitle">课堂详情</h3>
+                    <p class="text-sm text-gray-500 mt-1">第2节课 (09:00-09:45)</p>
+                </div>
+                <button onclick="closeModal('detailModal')" class="text-gray-500 hover:text-gray-700">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-6">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-blue-50 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-blue-600 mb-1">45</div>
+                        <div class="text-sm text-gray-600">班级人数</div>
+                    </div>
+                    <div class="bg-green-50 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-green-600 mb-1">38</div>
+                        <div class="text-sm text-gray-600">已完成</div>
+                    </div>
+                    <div class="bg-purple-50 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-purple-600 mb-1">86.5</div>
+                        <div class="text-sm text-gray-600">平均分</div>
+                    </div>
+                    <div class="bg-orange-50 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-orange-600 mb-1">95.6%</div>
+                        <div class="text-sm text-gray-600">达标率</div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-3">成绩分布</h4>
+                    <div id="classDetailChart" style="height: 300px;"></div>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-3">学生成绩列表</h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase" data-tip-side="bottom" data-tip="列：学生&#10;含义：本节课参加测试的学生姓名&#10;计算：testerNumber JOIN student 表，按学号排序&#10;来源：班级名册&#10;说明：头像首字按姓名自动生成">学生</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase" data-tip-side="bottom" data-tip="列：50米跑（项目原始成绩）&#10;含义：该学生本节课 50 米跑成绩&#10;计算：record.score_value，单位「秒」，保留 1 位小数&#10;来源：第三方设备回传&#10;说明：未测试显示「-」；多次测试时取最优成绩">50米跑</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase" data-tip-side="bottom" data-tip="列：立定跳远（项目原始成绩）&#10;含义：该学生本节课立定跳远成绩&#10;计算：record.score_value，单位「米」，保留 2 位小数&#10;来源：第三方设备回传&#10;说明：多次测试取最优；与 50 米跑共同决定平均分">立定跳远</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase" data-tip-side="bottom" data-tip="列：平均分&#10;含义：该学生本节课所有项目的换算后平均分&#10;计算：AVG(评分标准转换后的项目分)，每个项目各按 100 分制换算&#10;来源：成绩 + 评分标准表&#10;说明：缺测项目不参与平均；点击表头可按平均分排序">平均分</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase" data-tip-side="bottom" data-tip="列：等级&#10;含义：依据平均分换算的总评等级&#10;计算：≥85 优秀 / ≥75 良好 / ≥60 及格 / <60 不及格&#10;来源：评分标准表（可按学段配置）&#10;说明：与「成绩分布」饼图分类口径完全一致">等级</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium text-sm">张</div>
+                                            <span class="text-sm font-medium">张涛涛</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm">8.5秒</td>
+                                    <td class="px-4 py-3 text-sm">2.35m</td>
+                                    <td class="px-4 py-3 text-sm font-bold">88.5</td>
+                                    <td class="px-4 py-3"><span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">优秀</span></td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-medium text-sm">李</div>
+                                            <span class="text-sm font-medium">李明</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm">9.2秒</td>
+                                    <td class="px-4 py-3 text-sm">2.15m</td>
+                                    <td class="px-4 py-3 text-sm font-bold">82.3</td>
+                                    <td class="px-4 py-3"><span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">良好</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        function showClassMonitor(className, device, projects) {
+            document.getElementById('monitorModal').classList.remove('hidden');
+            document.getElementById('monitorTitle').textContent = className + ' - 实时监控';
+            document.getElementById('monitorInfo').textContent = device + ' | ' + projects;
+            
+            // 生成模拟数据
+            const tbody = document.getElementById('monitorTableBody');
+            tbody.innerHTML = '';
+            const students = [
+                {name: '张涛涛', num: '2021101317130', project: '50米跑', score: '8.5秒', status: '已完成', time: '1分32秒'},
+                {name: '李明', num: '2021101317131', project: '50米跑', score: '9.2秒', status: '已完成', time: '1分28秒'},
+                {name: '王小红', num: '2021101317132', project: '立定跳远', score: '测试中...', status: '进行中', time: '0分45秒'},
+                {name: '赵强', num: '2021101317133', project: '立定跳远', score: '-', status: '未开始', time: '-'},
+            ];
+            
+            students.forEach((s, i) => {
+                const statusClass = s.status === '已完成' ? 'bg-green-100 text-green-700' : 
+                                   s.status === '进行中' ? 'bg-blue-100 text-blue-700 animate-pulse' : 
+                                   'bg-gray-100 text-gray-700';
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50 ${s.status === '进行中' ? 'bg-blue-50' : ''}">
+                        <td class="px-4 py-3 text-sm text-gray-500">${i + 1}</td>
+                        <td class="px-4 py-3">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium text-sm">${s.name[0]}</div>
+                                <div>
+                                    <div class="font-medium text-gray-800 text-sm">${s.name}</div>
+                                    <div class="text-xs text-gray-500">${s.num}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${s.project}</td>
+                        <td class="px-4 py-3 text-sm font-bold text-gray-800">${s.score}</td>
+                        <td class="px-4 py-3"><span class="px-2 py-1 ${statusClass} text-xs font-medium rounded-full">${s.status}</span></td>
+                        <td class="px-4 py-3 text-sm text-gray-500">${s.time}</td>
+                        <td class="px-4 py-3"><button onclick="alert('学生：${s.name}\\n项目：${s.project}\\n成绩：${s.score}\\n状态：${s.status}\\n时间：${s.time}')" class="text-blue-600 hover:text-blue-700 text-sm font-medium">详情</button></td>
+                    </tr>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        function playVideo(title) {
+            const modal = document.getElementById('videoModal');
+            document.getElementById('videoTitle').textContent = title;
+            modal.classList.remove('hidden');
+            lucide.createIcons();
+        }
+        function closeVideoModal() {
+            document.getElementById('videoModal').classList.add('hidden');
+        }
+
+        function showClassDetail(className) {
+            document.getElementById('detailModal').classList.remove('hidden');
+            document.getElementById('detailTitle').textContent = className + ' - 课堂详情';
+            setTimeout(() => {
+                const chart = echarts.init(document.getElementById('classDetailChart'));
+                chart.setOption({
+                    tooltip: { trigger: 'item' },
+                    series: [{
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        data: [
+                            { value: 15, name: '优秀', itemStyle: { color: '#22c55e' } },
+                            { value: 18, name: '良好', itemStyle: { color: '#3b82f6' } },
+                            { value: 4, name: '及格', itemStyle: { color: '#eab308' } },
+                            { value: 1, name: '不及格', itemStyle: { color: '#ef4444' } }
+                        ]
+                    }]
+                });
+            }, 100);
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+    </script>
+
+    <!-- 视频播放弹窗 -->
+    <div id="videoModal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onclick="closeVideoModal()">
+        <div class="bg-white rounded-2xl w-full max-w-3xl overflow-hidden" onclick="event.stopPropagation()">
+            <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                <h3 class="text-base font-semibold text-gray-800" id="videoTitle">视频回放</h3>
+                <button onclick="closeVideoModal()" class="text-gray-500 hover:text-gray-700">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="relative aspect-video bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+                <!-- 占位播放器 -->
+                <div class="absolute inset-0 flex flex-col items-center justify-center text-white">
+                    <div class="w-20 h-20 rounded-full bg-white/10 border-2 border-white/30 flex items-center justify-center mb-4 backdrop-blur">
+                        <i data-lucide="play" class="w-10 h-10 ml-1"></i>
+                    </div>
+                    <div class="text-sm text-white/70">视频源：<span class="font-mono">videoUrl</span>（来自 ResultVideoAddEvent 推送）</div>
+                    <div class="text-xs text-white/40 mt-1">支持慢放、0.5x / 1x / 2x、逐帧回看</div>
+                </div>
+                <!-- 播放进度条占位 -->
+                <div class="absolute bottom-4 left-4 right-4 flex items-center gap-3 text-white">
+                    <i data-lucide="pause" class="w-5 h-5"></i>
+                    <div class="flex-1 h-1 bg-white/30 rounded-full overflow-hidden">
+                        <div class="h-full w-1/3 bg-white rounded-full"></div>
+                    </div>
+                    <span class="text-xs font-mono">00:03 / 00:08</span>
+                    <i data-lucide="volume-2" class="w-5 h-5"></i>
+                    <i data-lucide="maximize" class="w-5 h-5"></i>
+                </div>
+            </div>
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+                <div class="grid grid-cols-4 gap-3 text-center mb-3">
+                    <div><div class="text-lg font-bold text-green-600">95</div><div class="text-xs text-gray-500">AI 规范分</div></div>
+                    <div><div class="text-lg font-bold text-blue-600">8.12s</div><div class="text-xs text-gray-500">成绩</div></div>
+                    <div><div class="text-lg font-bold text-orange-600">标准</div><div class="text-xs text-gray-500">起跑姿势</div></div>
+                    <div><div class="text-lg font-bold text-purple-600">合格</div><div class="text-xs text-gray-500">摆臂幅度</div></div>
+                </div>
+                <div class="flex items-center justify-end gap-2">
+                    <button class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-white"><i data-lucide="message-square" class="w-3.5 h-3.5 inline mr-1"></i>批注点评</button>
+                    <button class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-white"><i data-lucide="share-2" class="w-3.5 h-3.5 inline mr-1"></i>分享给学生</button>
+                    <button onclick="closeVideoModal()" class="px-4 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const here = (location.pathname.split('/').pop() || '').toLowerCase();
+        document.querySelectorAll('aside nav a[href]').forEach(a => {
+            const h = (a.getAttribute('href') || '').toLowerCase();
+            if (h && h === here) a.addEventListener('click', e => e.preventDefault());
+        });
+        document.querySelectorAll('button:not([onclick])').forEach(btn => {
+            if (btn.closest('[id$="Modal"]')) return;
+            const txt = (btn.textContent || '').trim();
+            if (!txt || /^\d+$/.test(txt)) return;
+            btn.addEventListener('click', () => alert('演示原型：' + txt + '\n（接口联调时实装）'));
+        });
+    });
+</script>
+</body>
+</html>

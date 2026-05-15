@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧体育管理后台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        /* 字段说明 tooltip */
+        [data-tip] { position: relative; cursor: help; }
+        [data-tip]::after {
+            content: attr(data-tip);
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%) translateY(4px);
+            background: rgba(17,24,39,0.96);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 1.6;
+            padding: 8px 12px;
+            border-radius: 8px;
+            white-space: pre-line;
+            min-width: 240px;
+            max-width: 360px;
+            text-align: left;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .15s, transform .15s;
+            z-index: 9999;
+            box-shadow: 0 8px 24px rgba(0,0,0,.18);
+        }
+        [data-tip]:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+        [data-tip-side="bottom"]::after { bottom: auto; top: calc(100% + 8px); }
+        [data-tip-side="right"]::after { bottom: auto; left: calc(100% + 8px); top: 50%; transform: translateY(-50%) translateX(4px); }
+        [data-tip-side="right"]:hover::after { transform: translateY(-50%) translateX(0); }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
+            <div class="p-6 border-b border-gray-200">
+                <h1 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                    <i data-lucide="activity" class="w-6 h-6 text-blue-600"></i>
+                    <span>智慧体育后台</span>
+                </h1>
+                <p class="text-xs text-gray-500 mt-1">实验中学</p>
+            </div>
+            <nav class="flex-1 min-h-0 overflow-y-auto p-4 space-y-1">
+                <div class="px-2 mb-2">
+                    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider">智慧体育</div>
+                </div>
+                <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition" data-tab="exercise">
+                    <i data-lucide="activity" class="w-5 h-5"></i>
+                    <span>智慧体锻</span>
+                </a>
+                <a href="records.html" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition" data-tab="test">
+                    <i data-lucide="clipboard-list" class="w-5 h-5"></i>
+                    <span>智慧体测</span>
+                </a>
+                <a href="phone-demo.html" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition" data-tab="demo">
+                    <i data-lucide="smartphone" class="w-5 h-5"></i>
+                    <span>手机演示</span>
+                </a>
+            </nav>
+            <div class="shrink-0 p-4 border-t border-gray-200">
+
+            </div>
+        </aside>
+
+        <main class="flex-1 overflow-y-auto">
+            <header class="bg-white border-b border-gray-200 px-8 py-4">
+                <h2 class="text-2xl font-bold text-gray-800">手机演示</h2>
+                <p class="text-sm text-gray-500 mt-1">展示移动端应用界面</p>
+            </header>
+
+            <!-- 业务类型 Tab -->
+            <div class="bg-white border-b border-gray-200 px-8">
+                <div class="flex gap-0">
+                    <button id="atab-test" onclick="switchAnalyticsTab('test')" class="px-5 py-3 text-sm font-medium border-b-2 border-blue-600 text-blue-600 flex items-center gap-2" data-tip-side="bottom" data-tip="面板：测试分析&#10;包含：班级平均分、达标率、优秀率、不及格率 + 班级/项目/趋势图表&#10;适用：期末评价、期末考试、期中抽测、体育考试等明确评分场景&#10;数据源：记录库中 type=1 测试记录 + 本地评分标准表&#10;特征：需先在《评分标准》中配置名次/门限，否则达标率为 0">
+                        <i data-lucide="clipboard-check" class="w-4 h-4"></i>
+                        <span>测试分析</span>
+                    </button>
+                    <button id="atab-exercise" onclick="switchAnalyticsTab('exercise')" class="px-5 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 flex items-center gap-2" data-tip-side="bottom" data-tip="面板：锻炼分析&#10;包含：人均打卡、参与率、连续天数、冷清名单 + 班级活跃度/项目分布/趋势图表&#10;适用：课余练习、周末运动作业、寒暑假运动计划等“坚持型”场景&#10;数据源：记录库中 type=2 锻炼记录 + 作业打卡记录&#10;特征：不评定优秀/及格，只看次数、人次、参与率、坚持天数">
+                        <i data-lucide="flame" class="w-4 h-4"></i>
+                        <span>锻炼分析</span>
+                    </button>
+                    <button id="atab-gym" onclick="switchAnalyticsTab('gym')" class="px-5 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 flex items-center gap-2" data-tip-side="bottom" data-tip="面板：校园云体锻分析&#10;包含：出勤率、班次累计、达标班级数、需关注班级数 + 班级出勤排行&#10;适用：广播体操、大课间跑操、武术操等集体活动&#10;数据源：sync-sport-result 接口 type=4 校园云体锻同步记录&#10;⚠️ 出勤率/达标班级数等指标为本平台聚合计算，接口本身仅提供 score / hasTest / scoreEnable">
+                        <i data-lucide="users-2" class="w-4 h-4"></i>
+                        <span>校园云体锻</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-8">
+                <div id="aview-test" class="space-y-6">
+                <!-- 筛选条件 -->
+                <div class="bg-white rounded-xl p-6 border border-gray-200">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">时间范围</label>
+                            <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option>本学期</option>
+                                <option>本月</option>
+                                <option>本周</option>
+                                <option>自定义</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">班级</label>
+                            <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option>全部班级</option>
+                                <option>七年级1班</option>
+                                <option>七年级2班</option>
+                                <option>八年级1班</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">测试项目</label>
+                            <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option>全部项目</option>
+                                <option>50米跑</option>
+                                <option>立定跳远</option>
+                                <option>跳绳</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">对比维度</label>
+                            <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option>班级对比</option>
+                                <option>项目对比</option>
+                                <option>时间趋势</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <button class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2">
+                                <i data-lucide="search" class="w-4 h-4"></i>
+                                <span>分析</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 统计卡片 -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="bg-white rounded-xl p-6 border border-gray-200">
+                        <div class="text-sm text-gray-500 mb-2" data-tip="字段：班级平均分&#10;含义：当前筛选范围内（学期/班级/项目）所有有效测试记录的平均分数&#10;计算：AVG(评分标准转换后的分数)，查不到评分表时退化为原始成绩&#10;来源：测试记录 + 本地评分标准表&#10;说明：多项目混合时以「项目分」平均，不是「总分」">班级平均分</div>
+                        <div class="text-3xl font-bold text-gray-800 mb-2">85.6</div>
+                        <div class="text-xs text-gray-400">本学期·高于达标线</div>
+                    </div>
+                    <div class="bg-white rounded-xl p-6 border border-gray-200">
+                        <div class="text-sm text-gray-500 mb-2" data-tip="字段：达标率&#10;含义：成绩 ≥ 及格线（60分）的记录占总记录数的比例&#10;计算：COUNT(score≥60) / COUNT(有效记录) × 100%&#10;来源：测试记录 × 本地评分标准表&#10;说明：未配置《评分标准》时该值全为 0%，需先去《项目管理》添加评分表">达标率</div>
+                        <div class="text-3xl font-bold text-green-600 mb-2">92.3%</div>
+                        <div class="flex items-center gap-1 text-xs text-gray-400" title="基于本地评分标准判定，需先配置【评分标准表】">
+                            <i data-lucide="settings" class="w-3 h-3"></i>
+                            <span>依赖评分标准（需配置）</span>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl p-6 border border-gray-200">
+                        <div class="text-sm text-gray-500 mb-2" data-tip="字段：优秀率&#10;含义：成绩 ≥ 优秀线（90分）的记录占总记录数的比例&#10;计算：COUNT(score≥90) / COUNT(有效记录) × 100%&#10;来源：同达标率，阈值在评分标准表中逐项目配置&#10;说明：高优秀率 + 低平均分 报警：有可能存在「两极分化」或录入错误">优秀率</div>
+                        <div class="text-3xl font-bold text-purple-600 mb-2">18.5%</div>
+                        <div class="flex items-center gap-1 text-xs text-gray-400" title="基于本地评分标准判定">
+                            <i data-lucide="settings" class="w-3 h-3"></i>
+                            <span>依赖评分标准（需配置）</span>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl p-6 border border-gray-200">
+                        <div class="text-sm text-gray-500 mb-2" data-tip="字段：不及格率&#10;含义：成绩 < 及格线（60分）的记录占总记录数的比例&#10;计算：COUNT(score<60) / COUNT(有效记录) × 100%&#10;来源：同达标率&#10;说明：该指标高于 5% 需重点关注，考虑安排补测或增加辅导">不及格率</div>
+                        <div class="text-3xl font-bold text-red-600 mb-2">2.1%</div>
+                        <div class="flex items-center gap-1 text-xs text-gray-400" title="基于本地评分标准判定">
+                            <i data-lucide="settings" class="w-3 h-3"></i>
+                            <span>依赖评分标准（需配置）</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 图表区域 -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- 班级成绩对比 -->
+                    <div class="bg-white rounded-xl p-6 border border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4" data-tip="图表：班级平均分对比&#10;含义：横轴=班级，纵轴=该班在筛选项目上的平均分&#10;计算：GROUP BY 班级 AVG(score)，筛选器为全项目时取「项目分」的平均&#10;来源：测试记录表（type=1）&#10;说明：高于 85 为优势班，低于 75 需介入">班级平均分对比</h3>
+                        <div id="classCompareChart" style="height: 350px;"></div>
+                    </div>
+
+                    <!-- 成绩分布 -->
+                    <div class="bg-white rounded-xl p-6 border border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4" data-tip="图表：成绩等级分布&#10;含义：在评分标准下各等级记录数的占比（优秀/良好/及格/不及格）&#10;计算：逐记录按 score 查表得到等级，COUNT 后转点击查看名单&#10;来源：同上 + 评分标准表&#10;说明：不及格类别仅在该项目评分表存在下限时出现">成绩等级分布</h3>
+                        <div id="gradeDistChart" style="height: 350px;"></div>
+                    </div>
+
+                    <!-- 项目对比雷达图 -->
+                    <div class="bg-white rounded-xl p-6 border border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4" data-tip="图表：各项目平均分对比&#10;含义：雷达轴=各测试项目，轴上点=该项目的班级平均分（0-100）&#10;计算：GROUP BY 项目 AVG(评分标准转换后的分数)&#10;来源：测试记录表（type=1）、item/list 接口、评分标准表&#10;说明：可识别「短板项目」，辅助中考/体育考评估选项">各项目平均分对比</h3>
+                        <div id="projectRadarChart" style="height: 350px;"></div>
+                    </div>
+
+                    <!-- 成绩趋势 -->
+                    <div class="bg-white rounded-xl p-6 border border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4" data-tip="图表：成绩趋势分析&#10;含义：平均分/达标率/优秀率 按周变化趋势&#10;计算：以「测试日期」转为学期周次，按周聚合 AVG/COUNT达标/COUNT优秀&#10;来源：同上 + 评分标准表&#10;说明：查看「教学改进」效果；趋势平稳可判断考勤是否偏高">成绩趋势分析</h3>
+                        <div id="trendChart" style="height: 350px;"></div>
+                    </div>
+                </div>
+
+                <!-- 班级详细数据 -->
+                <div class="bg-white rounded-xl border border-gray-200">
+                    <div class="p-6 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800">班级成绩明细</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">班级</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" data-tip="列名：人数&#10;含义：该班在筛选范围内实际参与测试的学生人数，不是班级总人数&#10;计算：COUNT(DISTINCT 学生学号(testerNumber)) WHERE 班级=本行 AND 有测试记录&#10;来源：测试记录表&#10;说明：明显低于班级总人数时需检查是否有“未参考名单”">人数</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" data-tip="列名：平均分&#10;含义：该班所有有效测试记录的平均分&#10;计算：AVG(score) GROUP BY 班级&#10;来源：测试记录 + 评分标准表&#10;说明：多项目混合时以项目分平均，采用加权【按参考人次】">平均分</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" data-tip="列名：最高分&#10;含义：该班在筛选范围内的最高单次成绩&#10;计算：MAX(score) GROUP BY 班级，项目不同时以评分标准后的「项目分」最大值为准&#10;来源：测试记录&#10;说明：点击跳转最高分学生详情">最高分</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" data-tip="列名：最低分&#10;含义：该班在筛选范围内的最低单次成绩&#10;计算：MIN(score) GROUP BY 班级&#10;来源：同上&#10;说明：过低（如 < 50）需检查是否设备误记或学生身体状况异常">最低分</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" data-tip="列名：达标率（分班）&#10;含义：该班记录中 ≥ 及格线的比例&#10;计算：COUNT(score≥60) / COUNT(记录) GROUP BY 班级&#10;来源：测试记录 × 评分标准表&#10;说明：以班级为维度汇总，不受全校平均影响">达标率</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" data-tip="列名：优秀率（分班）&#10;含义：该班记录中 ≥ 优秀线的比例&#10;计算：COUNT(score≥90) / COUNT(记录) GROUP BY 班级&#10;来源：同上&#10;说明：达标率高但优秀率低表示「中间集中」，可考虑强化拔尖训练">优秀率</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium text-gray-800">七年级1班</td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">45</td>
+                                    <td class="px-6 py-4 text-sm font-bold text-gray-800">86.5</td>
+                                    <td class="px-6 py-4 text-sm text-green-600">98</td>
+                                    <td class="px-6 py-4 text-sm text-red-600">62</td>
+                                    <td class="px-6 py-4">
+                                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded">95.6%</span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded">20.0%</span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium text-gray-800">七年级2班</td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">43</td>
+                                    <td class="px-6 py-4 text-sm font-bold text-gray-800">84.2</td>
+                                    <td class="px-6 py-4 text-sm text-green-600">96</td>
+                                    <td class="px-6 py-4 text-sm text-red-600">58</td>
+                                    <td class="px-6 py-4">
+                                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded">93.0%</span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded">16.3%</span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium text-gray-800">八年级1班</td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">46</td>
+                                    <td class="px-6 py-4 text-sm font-bold text-gray-800">87.8</td>
+                                    <td class="px-6 py-4 text-sm text-green-600">99</td>
+                                    <td class="px-6 py-4 text-sm text-red-600">65</td>
+                                    <td class="px-6 py-4">
+                                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded">97.8%</span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded">23.9%</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                </div><!-- /#aview-test -->
+
+                <!-- 锻炼分析视图 -->
+                <div id="aview-exercise" class="hidden space-y-6">
+                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-3 flex items-start gap-2 text-xs text-orange-800">
+                        <i data-lucide="info" class="w-4 h-4 flex-shrink-0 mt-0.5"></i>
+                        <div>锻炼分析关注“活跃度与坚持度”，以次数、人次、参与率、连续天数为核心指标；不做等级评定。</div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div class="bg-white rounded-xl p-6 border border-gray-200">
+                            <div class="text-sm text-gray-500 mb-2" data-tip="字段：人均打卡次数&#10;含义：近 30 天学生人均产生的锻炼打卡次数&#10;计算：SUM(锻炼记录次数) / COUNT(DISTINCT 参与过的学生)&#10;来源：锻炼记录表（type=2） + 作业打卡表&#10;说明：分母为「参与过的学生」不是全体学生，如需「全校均值」请另行计算">人均打卡次数</div>
+                            <div class="text-3xl font-bold text-orange-600 mb-2">18.7</div>
+                            <div class="text-xs text-gray-400">近 30 天</div>
+                        </div>
+                        <div class="bg-white rounded-xl p-6 border border-gray-200">
+                            <div class="text-sm text-gray-500 mb-2" data-tip="字段：参与率&#10;含义：近 7 天内至少打卡一次的学生占全校总人数比例&#10;计算：COUNT(DISTINCT 近7天有记录的学生学号(testerNumber)) / 全校学生总数 × 100%&#10;来源：锻炼记录 + 学生名册&#10;说明：低于 70% 需推送提醒；可点击「冷清名单」查看未参与名单">参与率</div>
+                            <div class="text-3xl font-bold text-red-600 mb-2">82.4%</div>
+                            <div class="text-xs text-gray-400">近 7 天有打卡的学生占比</div>
+                        </div>
+                        <div class="bg-white rounded-xl p-6 border border-gray-200">
+                            <div class="text-sm text-gray-500 mb-2" data-tip="字段：平均连续天数&#10;含义：以“近 30 天”为窗口，参与学生的平均连续打卡天数&#10;计算：逐学生计算最近一次连续 streak，再 AVG&#10;来源：锻炼记录按日去重后计算&#10;说明：高连续天数是「习惯养成」指标，评估作业设计是否有效">平均连续天数</div>
+                            <div class="text-3xl font-bold text-purple-600 mb-2">4.3</div>
+                            <div class="text-xs text-gray-400">天 / 人</div>
+                        </div>
+                        <div class="bg-white rounded-xl p-6 border border-gray-200">
+                            <div class="text-sm text-gray-500 mb-2" data-tip="字段：冷清学生&#10;含义：近 3 天未产生任何锻炼打卡的学生人数&#10;计算：全校学生 - DISTINCT(近3天有锻炼记录的学生学号(testerNumber))&#10;来源：锻炼记录 + 学生名册&#10;说明：点击可查看名单并一键推送提醒到家长端">冷清学生</div>
+                            <div class="text-3xl font-bold text-gray-800 mb-2">42</div>
+                            <div class="text-xs text-gray-400">人 · 近 3 天未打卡</div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white rounded-xl p-6 border border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4" data-tip="图表：班级活跃度对比&#10;含义：横轴=班级，纵轴=近 30 天该班人均打卡次数&#10;计算：SUM(锻炼记录次数) / COUNT(DISTINCT 班内参与学生) GROUP BY 班级&#10;来源：锻炼记录表&#10;说明：呈现班级间「锻炼习惯」差异，辅助老师调整作业难度">班级活跃度对比（人均次数）</h3>
+                            <div id="exerciseClassChart" style="height: 300px;"></div>
+                        </div>
+                        <div class="bg-white rounded-xl p-6 border border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4" data-tip="图表：锻炼项目次数分布&#10;含义：各锻炼项目记录数占总记录数的比例&#10;计算：GROUP BY 项目ID COUNT(*)，转为点击查详情&#10;来源：锻炼记录表（type=2） + item/list 接口&#10;说明：跳绳/仰卧起坐频次较高是因为设备逻辑越完备">锻炼项目次数分布</h3>
+                            <div id="exerciseProjectChart" style="height: 300px;"></div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white rounded-xl p-6 border border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4" data-tip="图表：连续打卡天数分布&#10;含义：现阶段不同连续天数分档的学生人数&#10;计算：逐学生算出当前 streak，按 1、2、3、4、5、6、≥7 分档 COUNT(学生学号(testerNumber))&#10;来源：锻炼记录按日去重&#10;说明：「≥7 天」人数代表“习惯型学生”，是学生达人画像">连续打卡天数分布</h3>
+                            <div id="exerciseStreakChart" style="height: 300px;"></div>
+                        </div>
+                        <div class="bg-white rounded-xl p-6 border border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4" data-tip="图表：近 7 天打卡趋势&#10;含义：柱为每日打卡人次，线为每日参与学生数&#10;计算：SUM(记录次数) GROUP BY 日期、COUNT(DISTINCT 学生学号(testerNumber)) GROUP BY 日期&#10;来源：锻炼记录表&#10;说明：周末人次高但参与学生数低表示「少数人高频」，需扩大参与面">近 7 天打卡趋势</h3>
+                            <div id="exerciseTrendChart" style="height: 300px;"></div>
+                        </div>
+                    </div>
+                </div><!-- /#aview-exercise -->
+
+                <div id="aview-gym" class="hidden space-y-6">
+                    <!-- 筛选条件 -->
+                    <div class="bg-white rounded-xl p-6 border border-gray-200">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">时间范围</label>
+                                <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                                    <option>本周</option>
+                                    <option>本月</option>
+                                    <option>本学期</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">活动类型</label>
+                                <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                                    <option>全部</option>
+                                    <option>广播体操</option>
+                                    <option>大课间跑操</option>
+                                    <option>武术操</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">年级</label>
+                                <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                                    <option>全校</option>
+                                    <option>七年级</option>
+                                    <option>八年级</option>
+                                    <option>九年级</option>
+                                </select>
+                            </div>
+                            <div class="flex items-end">
+                                <button class="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+                                    应用筛选
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KPI 卡片 -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div class="bg-white rounded-xl p-6 border border-gray-200">
+                            <p class="text-sm text-gray-500 mb-2" data-tip="字段：平均出勤率&#10;含义：本周参与校园云体锻的「实到人数 / 应到人数」全校均值&#10;计算：SUM(去重 testerNumber) / 班级名册总人数 × 100%，本周范围&#10;来源：sync-sport-result 接口(type=4) 中的 testerNumber+grade+clazz 聚合，应到人数取自 school/overview 学校名册&#10;📊 本平台计算字段；⚠️ 接口未提供「请假/缺勤」字段，缺勤=未在采集窗口内出现">平均出勤率</p>
+                            <h3 class="text-3xl font-bold text-gray-800">96.5%</h3>
+                            <p class="text-xs text-gray-400 mt-2">应到 497 人 / 实到 480 人</p>
+                        </div>
+                        <div class="bg-white rounded-xl p-6 border border-gray-200">
+                            <p class="text-sm text-gray-500 mb-2" data-tip="字段：本周班次累计&#10;含义：本周全校举行校园云体锻活动的总节次数（班级×次数）&#10;计算：COUNT(DISTINCT (grade,clazz,DATE(createdDate))) WHERE 日期 ∈ 本周&#10;来源：sync-sport-result 接口(type=4) 的 createdDate + grade + clazz&#10;📊 本平台计算字段，预期 = 班级数 × 周频率（14×5=70），明显偏差可排查同步是否漏传">本周班次累计</p>
+                            <h3 class="text-3xl font-bold text-gray-800">62</h3>
+                            <p class="text-xs text-gray-400 mt-2">14 个班级 × 周 5 次</p>
+                        </div>
+                        <div class="bg-white rounded-xl p-6 border border-gray-200">
+                            <p class="text-sm text-gray-500 mb-2" data-tip="字段：达标班级数&#10;含义：本周出勤率 ≥ 95% 的班级数 / 全校班级总数&#10;计算：COUNT(班级) WHERE 出勤率≥95% / 总班数&#10;来源：同上，由班级出勤明细表统计&#10;说明：达标班会在「班级出勤排行」中以绿色进度条显示">达标班级数</p>
+                            <h3 class="text-3xl font-bold text-gray-800">11<span class="text-base font-normal text-gray-400">/14</span></h3>
+                            <p class="text-xs text-gray-400 mt-2">出勤率 ≥ 95%</p>
+                        </div>
+                        <div class="bg-white rounded-xl p-6 border border-gray-200">
+                            <p class="text-sm text-gray-500 mb-2" data-tip="字段：需关注班级&#10;含义：本周出勤率 < 90% 的班级数，需提醒班主任跟进&#10;计算：COUNT(班级) WHERE 出勤率<90%&#10;来源：同上&#10;说明：在排行最后以红色进度条显示；点击可查看未到学生名单">需关注班级</p>
+                            <h3 class="text-3xl font-bold text-red-600">3</h3>
+                            <p class="text-xs text-gray-400 mt-2">出勤率 &lt; 90%</p>
+                        </div>
+                    </div>
+
+                    <!-- 班级出勤率排行 -->
+                    <div class="bg-white rounded-xl p-6 border border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4" data-tip="图表：班级出勤率排行（本周）&#10;含义：本周各班级校园云体锻出勤率从高到低排序，括号内 实到/应到&#10;计算：COUNT(DISTINCT testerNumber) / 班级在册人数 GROUP BY (grade,clazz)&#10;来源：sync-sport-result 接口(type=4) + school/overview 班级名册&#10;📊 本平台计算字段；颜色阈值→绿：≥95%；青：90-95%；黄：85-90%；红：<85%">班级出勤率排行（本周）</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex items-center justify-between text-sm mb-1">
+                                    <span class="text-gray-700">七年级1班</span>
+                                    <span class="text-gray-800 font-semibold">99.2%（48/48）</span>
+                                </div>
+                                <div class="h-2 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-emerald-500 rounded-full" style="width:99%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between text-sm mb-1">
+                                    <span class="text-gray-700">八年级3班</span>
+                                    <span class="text-gray-800 font-semibold">98.4%（43/44）</span>
+                                </div>
+                                <div class="h-2 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-emerald-500 rounded-full" style="width:98%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between text-sm mb-1">
+                                    <span class="text-gray-700">七年级2班</span>
+                                    <span class="text-gray-800 font-semibold">96.7%（42/43）</span>
+                                </div>
+                                <div class="h-2 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-cyan-500 rounded-full" style="width:96%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between text-sm mb-1">
+                                    <span class="text-gray-700">九年级1班</span>
+                                    <span class="text-gray-800 font-semibold">88.9%（40/45）</span>
+                                </div>
+                                <div class="h-2 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-yellow-500 rounded-full" style="width:88%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between text-sm mb-1">
+                                    <span class="text-gray-700">九年级2班</span>
+                                    <span class="text-gray-800 font-semibold">82.5%（33/40）</span>
+                                </div>
+                                <div class="h-2 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-red-500 rounded-full" style="width:82%"></div></div>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-4">数据来源：sync-sport-result 接口 type=4 校园云体锻同步记录（出勤率为本平台聚合计算）</p>
+                    </div>
+                </div><!-- /#aview-gym -->
+            </div>
+        </main>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // 班级对比柱状图
+        const classCompareChart = echarts.init(document.getElementById('classCompareChart'));
+        classCompareChart.setOption({
+            tooltip: { trigger: 'axis' },
+            grid: { top: 20, right: 30, bottom: 40, left: 80 },
+            xAxis: {
+                type: 'category',
+                data: ['七年级1班', '七年级2班', '七年级3班', '八年级1班', '八年级2班']
+            },
+            yAxis: { type: 'value', name: '平均分' },
+            series: [{
+                data: [86.5, 84.2, 85.8, 87.8, 83.5],
+                type: 'bar',
+                itemStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: '#3b82f6' },
+                        { offset: 1, color: '#8b5cf6' }
+                    ])
+                },
+                label: { show: true, position: 'top' }
+            }]
+        });
+
+        // 成绩等级分布饼图
+        const gradeDistChart = echarts.init(document.getElementById('gradeDistChart'));
+        gradeDistChart.setOption({
+            tooltip: { trigger: 'item' },
+            legend: { orient: 'vertical', left: 'left' },
+            series: [{
+                type: 'pie',
+                radius: ['40%', '70%'],
+                data: [
+                    { value: 85, name: '优秀', itemStyle: { color: '#22c55e' } },
+                    { value: 280, name: '良好', itemStyle: { color: '#3b82f6' } },
+                    { value: 497, name: '及格', itemStyle: { color: '#eab308' } },
+                    { value: 10, name: '不及格', itemStyle: { color: '#ef4444' } }
+                ],
+                label: { formatter: '{b}: {c}人 ({d}%)' }
+            }]
+        });
+
+        // 项目对比雷达图
+        const projectRadarChart = echarts.init(document.getElementById('projectRadarChart'));
+        projectRadarChart.setOption({
+            tooltip: {},
+            radar: {
+                indicator: [
+                    { name: '50米跑', max: 100 },
+                    { name: '立定跳远', max: 100 },
+                    { name: '跳绳', max: 100 },
+                    { name: '仰卧起坐', max: 100 },
+                    { name: '800米跑', max: 100 },
+                    { name: '实心球', max: 100 }
+                ]
+            },
+            series: [{
+                type: 'radar',
+                data: [{
+                    value: [85, 88, 90, 82, 78, 84],
+                    name: '平均分',
+                    areaStyle: { color: 'rgba(59, 130, 246, 0.3)' },
+                    itemStyle: { color: '#3b82f6' }
+                }]
+            }]
+        });
+
+        // 成绩趋势图
+        const trendChart = echarts.init(document.getElementById('trendChart'));
+        trendChart.setOption({
+            tooltip: { trigger: 'axis' },
+            legend: { data: ['平均分', '达标率', '优秀率'], bottom: 0 },
+            xAxis: {
+                type: 'category',
+                data: ['第1周', '第2周', '第3周', '第4周', '第5周', '第6周', '第7周']
+            },
+            yAxis: { type: 'value' },
+            series: [
+                {
+                    name: '平均分',
+                    type: 'line',
+                    data: [82, 83, 84, 84.5, 85, 85.5, 85.6],
+                    smooth: true,
+                    itemStyle: { color: '#3b82f6' }
+                },
+                {
+                    name: '达标率',
+                    type: 'line',
+                    data: [88, 89, 90, 91, 91.5, 92, 92.3],
+                    smooth: true,
+                    itemStyle: { color: '#10b981' }
+                },
+                {
+                    name: '优秀率',
+                    type: 'line',
+                    data: [15, 16, 16.5, 17, 17.5, 18, 18.5],
+                    smooth: true,
+                    itemStyle: { color: '#8b5cf6' }
+                }
+            ]
+        });
+
+        window.addEventListener('resize', () => {
+            classCompareChart.resize();
+            gradeDistChart.resize();
+            projectRadarChart.resize();
+            trendChart.resize();
+        });
+
+        // ====== 锻炼分析图表 ======
+        let exerciseCharts = null;
+        function initExerciseCharts() {
+            if (exerciseCharts) { Object.values(exerciseCharts).forEach(c => c.resize()); return; }
+            const c1 = echarts.init(document.getElementById('exerciseClassChart'));
+            c1.setOption({
+                tooltip: { trigger: 'axis' },
+                grid: { top: 20, right: 30, bottom: 40, left: 60 },
+                xAxis: { type: 'category', data: ['七年级1班','七年级2班','七年级3班','八年级1班','八年级2班'] },
+                yAxis: { type: 'value', name: '次/人' },
+                series: [{ type: 'bar', data: [24.5, 18.2, 22.1, 20.8, 14.3], itemStyle: { color: '#f97316' }, label: { show: true, position: 'top' } }]
+            });
+            const c2 = echarts.init(document.getElementById('exerciseProjectChart'));
+            c2.setOption({
+                tooltip: { trigger: 'item' },
+                legend: { orient: 'vertical', left: 'left', textStyle: { fontSize: 12 } },
+                series: [{
+                    type: 'pie', radius: ['40%','70%'],
+                    data: [
+                        { value: 2345, name: '跳绳', itemStyle: { color: '#ef4444' } },
+                        { value: 1230, name: '仰卧起坐', itemStyle: { color: '#f97316' } },
+                        { value: 890, name: '深蹲', itemStyle: { color: '#eab308' } },
+                        { value: 670, name: '开合跳', itemStyle: { color: '#22c55e' } },
+                        { value: 450, name: '高抬腿', itemStyle: { color: '#3b82f6' } },
+                        { value: 257, name: '其他', itemStyle: { color: '#8b5cf6' } }
+                    ],
+                    label: { formatter: '{b}\n{d}%' }
+                }]
+            });
+            const c3 = echarts.init(document.getElementById('exerciseStreakChart'));
+            c3.setOption({
+                tooltip: { trigger: 'axis' },
+                grid: { top: 20, right: 30, bottom: 40, left: 60 },
+                xAxis: { type: 'category', data: ['1天','2天','3天','4天','5天','6天','≥7天'] },
+                yAxis: { type: 'value', name: '人数' },
+                series: [{ type: 'bar', data: [42, 58, 75, 68, 52, 38, 48], itemStyle: { color: '#a855f7' } }]
+            });
+            const c4 = echarts.init(document.getElementById('exerciseTrendChart'));
+            c4.setOption({
+                tooltip: { trigger: 'axis' },
+                legend: { data: ['打卡人次','参与学生数'], bottom: 0 },
+                grid: { top: 20, right: 40, bottom: 50, left: 50 },
+                xAxis: { type: 'category', data: ['05-07','05-08','05-09','05-10','05-11','05-12','05-13'] },
+                yAxis: { type: 'value' },
+                series: [
+                    { name: '打卡人次', type: 'bar', data: [380,420,460,510,485,540,542], itemStyle: { color: '#f97316' } },
+                    { name: '参与学生数', type: 'line', data: [140,152,165,178,172,180,180], smooth: true, itemStyle: { color: '#ef4444' } }
+                ]
+            });
+            exerciseCharts = { c1, c2, c3, c4 };
+            window.addEventListener('resize', () => Object.values(exerciseCharts).forEach(c => c.resize()));
+        }
+
+        function switchAnalyticsTab(tab) {
+            const testView = document.getElementById('aview-test');
+            const exerciseView = document.getElementById('aview-exercise');
+            const gymView = document.getElementById('aview-gym');
+            const tabTest = document.getElementById('atab-test');
+            const tabExercise = document.getElementById('atab-exercise');
+            const tabGym = document.getElementById('atab-gym');
+            const inactive = 'px-5 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 flex items-center gap-2';
+            testView.classList.add('hidden');
+            exerciseView.classList.add('hidden');
+            gymView.classList.add('hidden');
+            tabTest.className = inactive;
+            tabExercise.className = inactive;
+            tabGym.className = inactive;
+            if (tab === 'test') {
+                testView.classList.remove('hidden');
+                tabTest.className = 'px-5 py-3 text-sm font-medium border-b-2 border-blue-600 text-blue-600 flex items-center gap-2';
+            } else if (tab === 'exercise') {
+                exerciseView.classList.remove('hidden');
+                tabExercise.className = 'px-5 py-3 text-sm font-medium border-b-2 border-orange-600 text-orange-600 flex items-center gap-2';
+                setTimeout(initExerciseCharts, 50);
+            } else {
+                gymView.classList.remove('hidden');
+                tabGym.className = 'px-5 py-3 text-sm font-medium border-b-2 border-indigo-600 text-indigo-600 flex items-center gap-2';
+            }
+            lucide.createIcons();
+        }
+    </script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const here = (location.pathname.split('/').pop() || '').toLowerCase();
+        document.querySelectorAll('aside nav a[href]').forEach(a => {
+            const h = (a.getAttribute('href') || '').toLowerCase();
+            if (h && h === here) a.addEventListener('click', e => e.preventDefault());
+        });
+        document.querySelectorAll('button:not([onclick])').forEach(btn => {
+            if (btn.closest('[id$="Modal"]')) return;
+            const txt = (btn.textContent || '').trim();
+            if (!txt || /^\d+$/.test(txt)) return;
+            btn.addEventListener('click', () => alert('演示原型：' + txt + '\n（接口联调时实装）'));
+        });
+    });
+</script>
+</body>
+</html>

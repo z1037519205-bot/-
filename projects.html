@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧体育管理后台 - 项目管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        [data-tip] { position: relative; cursor: help; }
+        [data-tip]:hover::after {
+            content: attr(data-tip);
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(17,24,39,.95);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            line-height: 1.6;
+            white-space: pre-line;
+            z-index: 1000;
+            min-width: 240px;
+            max-width: 380px;
+            text-align: left;
+            box-shadow: 0 4px 12px rgba(0,0,0,.15);
+            pointer-events: none;
+            font-weight: 400;
+        }
+        [data-tip]:hover::before {
+            content: '';
+            position: absolute;
+            bottom: calc(100% + 2px);
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: rgba(17,24,39,.95);
+            z-index: 1000;
+            pointer-events: none;
+        }
+        [data-tip-side="bottom"]:hover::after { bottom: auto; top: calc(100% + 8px); }
+        [data-tip-side="bottom"]:hover::before { bottom: auto; top: calc(100% + 2px); border-top-color: transparent; border-bottom-color: rgba(17,24,39,.95); }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- 侧边栏导航 -->
+        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
+            <div class="p-6 border-b border-gray-200">
+                <h1 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                    <i data-lucide="activity" class="w-6 h-6 text-blue-600"></i>
+                    <span>智慧体育后台</span>
+                </h1>
+                <p class="text-xs text-gray-500 mt-1">实验中学</p>
+            </div>
+            <nav class="flex-1 min-h-0 overflow-y-auto p-4 space-y-1">
+                <div class="px-2 mb-2">
+                    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider">智慧体育</div>
+                </div>
+                <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition" data-tab="exercise">
+                    <i data-lucide="activity" class="w-5 h-5"></i>
+                    <span>智慧体锻</span>
+                </a>
+                <a href="records.html" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition" data-tab="test">
+                    <i data-lucide="clipboard-list" class="w-5 h-5"></i>
+                    <span>智慧体测</span>
+                </a>
+                <a href="phone-demo.html" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition" data-tab="demo">
+                    <i data-lucide="smartphone" class="w-5 h-5"></i>
+                    <span>手机演示</span>
+                </a>
+            </nav>
+            <div class="shrink-0 p-4 border-t border-gray-200">
+                <div class="flex items-center gap-3 px-4 py-3">
+                    <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium">张</div>
+                    <div>
+                        <div class="text-sm font-medium text-gray-800">张老师</div>
+                        <div class="text-xs text-gray-500">体育教师</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="flex-1 overflow-y-auto">
+            <!-- 顶部Header -->
+            <header class="bg-white border-b border-gray-200 px-8 py-4">
+                <h2 class="text-2xl font-bold text-gray-800">项目管理</h2>
+                <p class="text-sm text-gray-500 mt-1">管理体育测试和锻炼项目</p>
+            </header>
+
+            <!-- 内容区域 -->
+            <div class="p-8 space-y-6">
+                <!-- Tab切换 -->
+                <div class="bg-white rounded-xl border border-gray-200">
+                    <div class="border-b border-gray-200">
+                        <nav class="flex">
+                            <button onclick="switchTab('test')" id="tab-test" class="px-6 py-4 text-sm font-medium border-b-2 border-blue-600 text-blue-600" data-tip-side="bottom" data-tip="分类：测试项目&#10;含义：不定期评估学生体能水平的项目（如 50 米跑 / 立定跳远）&#10;与锻炼项目区分：测试产生可评分成绩，锻炼只记打卡。&#10;来源：本系统item/list 接口，同步自智慧体育平台">
+                                测试项目
+                            </button>
+                            <button onclick="switchTab('exercise')" id="tab-exercise" class="px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tip-side="bottom" data-tip="分类：锻炼项目&#10;含义：日常课间 / 课后 / 家庭作业使用的项目（如跳绳 / 仰卧起坐）&#10;与测试项目区分：仅打卡计次，不计入评分。&#10;来源：本系统item/list 接口，同步自智慧体育平台">
+                                锻炼项目
+                            </button>
+                        </nav>
+                    </div>
+
+                    <!-- 测试项目列表 -->
+                    <div id="content-test" class="p-6">
+                        <div class="mb-4 flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <input type="text" placeholder="搜索项目名称或编号" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-64">
+                                <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option>全部类型</option>
+                                    <option>体能类</option>
+                                    <option>球类</option>
+                                    <option>游泳类</option>
+                                </select>
+                            </div>
+                            <span class="text-sm text-gray-500" data-tip="字段：测试项目总数&#10;含义：本系统item/list 接口中启用状态的测试项目条数&#10;计算：COUNT(项目) WHERE 类型 = 测试 AND 状态 = 启用&#10;来源：本系统item/list 接口&#10;说明：禁用项目不计入">共 35 个项目</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="hidden px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">内部编码〖系统用〗</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">项目名称</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">类型</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" data-tip="列名：单位&#10;含义：该项目成绩计量单位&#10;举例：跳绳=个、跳远=cm、跑步=秒&#10;来源：本系统item/list 接口配置&#10;说明：设备采集成绩后按该单位存储">单位</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" data-tip="列名：使用频次&#10;含义：该项目本学期被使用产生记录的总次数&#10;计算：COUNT(测试记录 或 锻炼记录) WHERE 项目ID = 当前行&#10;来源：成绩 / 锻炼同步接口&#10;说明：频次越高表示项目越被老师常用">使用频次</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" data-tip="列名：状态&#10;含义：项目是否可被老师选择使用&#10;取值：启用 / 禁用&#10;来源：本系统item/list 接口状态字段&#10;说明：禁用后不会出现在课堂 / 作业选项中，已产生的记录仍保留">状态</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="hidden px-6 py-4 text-sm text-gray-500">PE-T01</td>
+                                        <td class="px-6 py-4 font-medium text-gray-800">双脚跳绳</td>
+                                        <td class="px-6 py-4">
+                                            <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded">体能类</span>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-700">个</td>
+                                        <td class="px-6 py-4 text-sm font-medium text-gray-800">10,248</td>
+                                        <td class="px-6 py-4">
+                                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">启用</span>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <button onclick="alert('项目详情：参数配置 + 计数规则 + 关联班级\n（演示原型，详情页待开发）')" class="text-blue-600 hover:text-blue-700 text-sm font-medium">查看</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="hidden px-6 py-4 text-sm text-gray-500">PE-T02</td>
+                                        <td class="px-6 py-4 font-medium text-gray-800">立定跳远</td>
+                                        <td class="px-6 py-4">
+                                            <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded">体能类</span>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-700">cm</td>
+                                        <td class="px-6 py-4 text-sm font-medium text-gray-800">8,562</td>
+                                        <td class="px-6 py-4">
+                                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">启用</span>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <button onclick="alert('项目详情：参数配置 + 计数规则 + 关联班级\n（演示原型，详情页待开发）')" class="text-blue-600 hover:text-blue-700 text-sm font-medium">查看</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="hidden px-6 py-4 text-sm text-gray-500">PE-T03</td>
+                                        <td class="px-6 py-4 font-medium text-gray-800">50米跑</td>
+                                        <td class="px-6 py-4">
+                                            <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded">体能类</span>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-700">秒</td>
+                                        <td class="px-6 py-4 text-sm font-medium text-gray-800">7,892</td>
+                                        <td class="px-6 py-4">
+                                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">启用</span>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <button onclick="alert('项目详情：参数配置 + 计数规则 + 关联班级\n（演示原型，详情页待开发）')" class="text-blue-600 hover:text-blue-700 text-sm font-medium">查看</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="hidden px-6 py-4 text-sm text-gray-500">PE-T04</td>
+                                        <td class="px-6 py-4 font-medium text-gray-800">仰卧起坐</td>
+                                        <td class="px-6 py-4">
+                                            <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded">体能类</span>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-700">个</td>
+                                        <td class="px-6 py-4 text-sm font-medium text-gray-800">6,450</td>
+                                        <td class="px-6 py-4">
+                                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">启用</span>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <button onclick="alert('项目详情：参数配置 + 计数规则 + 关联班级\n（演示原型，详情页待开发）')" class="text-blue-600 hover:text-blue-700 text-sm font-medium">查看</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="hidden px-6 py-4 text-sm text-gray-500">PE-T05</td>
+                                        <td class="px-6 py-4 font-medium text-gray-800">足球绕桩</td>
+                                        <td class="px-6 py-4">
+                                            <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded">球类</span>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-700">秒</td>
+                                        <td class="px-6 py-4 text-sm font-medium text-gray-800">3,280</td>
+                                        <td class="px-6 py-4">
+                                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">启用</span>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <button onclick="alert('项目详情：参数配置 + 计数规则 + 关联班级\n（演示原型，详情页待开发）')" class="text-blue-600 hover:text-blue-700 text-sm font-medium">查看</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="hidden px-6 py-4 text-sm text-gray-500">PE-T06</td>
+                                        <td class="px-6 py-4 font-medium text-gray-800">25米游泳</td>
+                                        <td class="px-6 py-4">
+                                            <span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs font-medium rounded">游泳类</span>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-700">秒</td>
+                                        <td class="px-6 py-4 text-sm font-medium text-gray-800">1,520</td>
+                                        <td class="px-6 py-4">
+                                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">启用</span>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <button onclick="alert('项目详情：参数配置 + 计数规则 + 关联班级\n（演示原型，详情页待开发）')" class="text-blue-600 hover:text-blue-700 text-sm font-medium">查看</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-4 flex items-center justify-between">
+                            <span class="text-sm text-gray-500">显示 1-6 条，共 35 条</span>
+                            <div class="flex items-center gap-2">
+                                <button class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 text-sm">上一页</button>
+                                <button class="px-3 py-1 bg-blue-600 text-white rounded text-sm">1</button>
+                                <button class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 text-sm">2</button>
+                                <button class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 text-sm">3</button>
+                                <button class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 text-sm">下一页</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 锻炼项目列表 -->
+                    <div id="content-exercise" class="p-6 hidden">
+                        <div class="mb-4 flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <input type="text" placeholder="搜索项目名称或编号" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-64">
+                                <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option>全部类型</option>
+                                    <option>体能类</option>
+                                    <option>球类</option>
+                                </select>
+                            </div>
+                            <span class="text-sm text-gray-500" data-tip="字段：锻炼项目总数&#10;含义：本系统item/list 接口中启用状态的锻炼项目条数&#10;计算：COUNT(项目) WHERE 类型 = 锻炼 AND 状态 = 启用&#10;来源：本系统item/list 接口&#10;说明：禁用项目不计入">共 42 个项目</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="hidden px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">内部编码〖系统用〗</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">项目名称</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">类型</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" data-tip="列名：单位&#10;含义：该项目成绩计量单位&#10;举例：跳绳=个、跳远=cm、跑步=秒&#10;来源：本系统item/list 接口配置&#10;说明：设备采集成绩后按该单位存储">单位</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" data-tip="列名：使用频次&#10;含义：该项目本学期被使用产生记录的总次数&#10;计算：COUNT(测试记录 或 锻炼记录) WHERE 项目ID = 当前行&#10;来源：成绩 / 锻炼同步接口&#10;说明：频次越高表示项目越被老师常用">使用频次</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" data-tip="列名：状态&#10;含义：项目是否可被老师选择使用&#10;取值：启用 / 禁用&#10;来源：本系统item/list 接口状态字段&#10;说明：禁用后不会出现在课堂 / 作业选项中，已产生的记录仍保留">状态</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="hidden px-6 py-4 text-sm text-gray-500">PE-E01</td>
+                                        <td class="px-6 py-4 font-medium text-gray-800">双脚跳绳</td>
+                                        <td class="px-6 py-4">
+                                            <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded">体能类</span>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-700">个</td>
+                                        <td class="px-6 py-4 text-sm font-medium text-gray-800">15,680</td>
+                                        <td class="px-6 py-4">
+                                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">启用</span>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <button onclick="alert('项目详情：参数配置 + 计数规则 + 关联班级\n（演示原型，详情页待开发）')" class="text-blue-600 hover:text-blue-700 text-sm font-medium">查看</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="hidden px-6 py-4 text-sm text-gray-500">PE-E02</td>
+                                        <td class="px-6 py-4 font-medium text-gray-800">换脚跳绳</td>
+                                        <td class="px-6 py-4">
+                                            <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded">体能类</span>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-700">个</td>
+                                        <td class="px-6 py-4 text-sm font-medium text-gray-800">8,920</td>
+                                        <td class="px-6 py-4">
+                                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">启用</span>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <button onclick="alert('项目详情：参数配置 + 计数规则 + 关联班级\n（演示原型，详情页待开发）')" class="text-blue-600 hover:text-blue-700 text-sm font-medium">查看</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="hidden px-6 py-4 text-sm text-gray-500">PE-E03</td>
+                                        <td class="px-6 py-4 font-medium text-gray-800">高抬腿</td>
+                                        <td class="px-6 py-4">
+                                            <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded">体能类</span>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-700">个</td>
+                                        <td class="px-6 py-4 text-sm font-medium text-gray-800">12,350</td>
+                                        <td class="px-6 py-4">
+                                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">启用</span>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <button onclick="alert('项目详情：参数配置 + 计数规则 + 关联班级\n（演示原型，详情页待开发）')" class="text-blue-600 hover:text-blue-700 text-sm font-medium">查看</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="hidden px-6 py-4 text-sm text-gray-500">PE-E04</td>
+                                        <td class="px-6 py-4 font-medium text-gray-800">排球垫球</td>
+                                        <td class="px-6 py-4">
+                                            <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded">球类</span>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-700">个</td>
+                                        <td class="px-6 py-4 text-sm font-medium text-gray-800">5,680</td>
+                                        <td class="px-6 py-4">
+                                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">启用</span>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <button onclick="alert('项目详情：参数配置 + 计数规则 + 关联班级\n（演示原型，详情页待开发）')" class="text-blue-600 hover:text-blue-700 text-sm font-medium">查看</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="hidden px-6 py-4 text-sm text-gray-500">PE-E05</td>
+                                        <td class="px-6 py-4 font-medium text-gray-800">篮球高运球</td>
+                                        <td class="px-6 py-4">
+                                            <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded">球类</span>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-700">个</td>
+                                        <td class="px-6 py-4 text-sm font-medium text-gray-800">7,240</td>
+                                        <td class="px-6 py-4">
+                                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">启用</span>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <button onclick="alert('项目详情：参数配置 + 计数规则 + 关联班级\n（演示原型，详情页待开发）')" class="text-blue-600 hover:text-blue-700 text-sm font-medium">查看</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-4 flex items-center justify-between">
+                            <span class="text-sm text-gray-500">显示 1-5 条，共 42 条</span>
+                            <div class="flex items-center gap-2">
+                                <button class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 text-sm">上一页</button>
+                                <button class="px-3 py-1 bg-blue-600 text-white rounded text-sm">1</button>
+                                <button class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 text-sm">2</button>
+                                <button class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 text-sm">3</button>
+                                <button class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 text-sm">下一页</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 项目使用统计 -->
+                <div class="bg-white rounded-xl p-6 border border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4" data-tip="字段：项目使用统计（Top 6）&#10;含义：本学期使用频次最高的测试项目&#10;计算：COUNT(成绩记录) GROUP BY 项目，取 Top 6&#10;来源：成绩同步接口 + item/list 接口&#10;说明：趋势反映学校体育课常选项目偏好">项目使用统计</h3>
+                    <div id="projectUsageChart" style="height: 350px;"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // Tab切换
+        function switchTab(tab) {
+            // 隐藏所有内容
+            document.getElementById('content-test').classList.add('hidden');
+            document.getElementById('content-exercise').classList.add('hidden');
+            
+            // 重置所有tab样式
+            document.getElementById('tab-test').classList.remove('border-blue-600', 'text-blue-600');
+            document.getElementById('tab-test').classList.add('border-transparent', 'text-gray-500');
+            document.getElementById('tab-exercise').classList.remove('border-blue-600', 'text-blue-600');
+            document.getElementById('tab-exercise').classList.add('border-transparent', 'text-gray-500');
+            
+            // 显示选中的内容
+            document.getElementById('content-' + tab).classList.remove('hidden');
+            document.getElementById('tab-' + tab).classList.remove('border-transparent', 'text-gray-500');
+            document.getElementById('tab-' + tab).classList.add('border-blue-600', 'text-blue-600');
+        }
+
+        // 项目使用统计图
+        const projectUsageChart = echarts.init(document.getElementById('projectUsageChart'));
+        projectUsageChart.setOption({
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+            grid: { top: 20, right: 30, bottom: 60, left: 120 },
+            xAxis: { type: 'value', name: '使用次数' },
+            yAxis: {
+                type: 'category',
+                data: ['25米游泳', '足球绕桩', '仰卧起坐', '50米跑', '立定跳远', '双脚跳绳'],
+                inverse: true
+            },
+            series: [
+                {
+                    name: '使用次数',
+                    type: 'bar',
+                    data: [
+                        { value: 1520, itemStyle: { color: '#f97316' } },
+                        { value: 3280, itemStyle: { color: '#8b5cf6' } },
+                        { value: 6450, itemStyle: { color: '#22c55e' } },
+                        { value: 7892, itemStyle: { color: '#10b981' } },
+                        { value: 8562, itemStyle: { color: '#3b82f6' } },
+                        { value: 10248, itemStyle: { color: '#06b6d4' } }
+                    ],
+                    barWidth: '60%',
+                    label: { show: true, position: 'right' }
+                }
+            ]
+        });
+
+        window.addEventListener('resize', () => {
+            projectUsageChart.resize();
+        });
+    </script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const here = (location.pathname.split('/').pop() || '').toLowerCase();
+        document.querySelectorAll('aside nav a[href]').forEach(a => {
+            const h = (a.getAttribute('href') || '').toLowerCase();
+            if (h && h === here) a.addEventListener('click', e => e.preventDefault());
+        });
+        document.querySelectorAll('button:not([onclick])').forEach(btn => {
+            if (btn.closest('[id$="Modal"]')) return;
+            const txt = (btn.textContent || '').trim();
+            if (!txt || /^\d+$/.test(txt)) return;
+            btn.addEventListener('click', () => alert('演示原型：' + txt + '\n（接口联调时实装）'));
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手机演示 - 智慧体育管理后台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* 手机模型样式 */
+        .phone-mockup {
+            width: 375px;
+            height: 812px;
+            border: 12px solid #1f2937;
+            border-radius: 40px;
+            overflow: hidden;
+            position: relative;
+            background: #000;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3), inset 0 0 0 2px #374151;
+        }
+        
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #1f2937;
+            border-radius: 0 0 20px 20px;
+            z-index: 10;
+        }
+        
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: #f5f5f5;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .phone-screen::-webkit-scrollbar {
+            width: 0;
+        }
+        
+        /* Tab 切换样式 */
+        .phone-tab {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .phone-tab.active {
+            border-color: #3b82f6;
+            color: #3b82f6;
+            background: #eff6ff;
+        }
+        
+        /* 演示内容样式 */
+        .demo-content {
+            display: none;
+        }
+        
+        .demo-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- 侧边栏导航 -->
+        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
+            <div class="p-6 border-b border-gray-200">
+                <h1 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                    <i data-lucide="activity" class="w-6 h-6 text-blue-600"></i>
+                    <span>智慧体育后台</span>
+                </h1>
+                <p class="text-xs text-gray-500 mt-1">实验中学</p>
+            </div>
+            <nav class="flex-1 min-h-0 overflow-y-auto p-4 space-y-1">
+                <div class="px-2 mb-2">
+                    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider">智慧体育</div>
+                </div>
+                <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition">
+                    <i data-lucide="activity" class="w-5 h-5"></i>
+                    <span>智慧体锻</span>
+                </a>
+                <a href="records.html" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition">
+                    <i data-lucide="clipboard-list" class="w-5 h-5"></i>
+                    <span>智慧体测</span>
+                </a>
+                <a href="phone-demo.html" class="flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-600 rounded-lg font-medium">
+                    <i data-lucide="smartphone" class="w-5 h-5"></i>
+                    <span>手机演示</span>
+                </a>
+            </nav>
+            <div class="shrink-0 p-4 border-t border-gray-200">
+
+            </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="flex-1 overflow-y-auto">
+            <!-- 顶部Header -->
+            <header class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">手机演示</h2>
+                    <p class="text-sm text-gray-500 mt-1">展示移动端应用界面</p>
+                </div>
+            </header>
+
+            <!-- Tab 切换 -->
+            <div class="bg-white border-b border-gray-200 px-8">
+                <div class="flex space-x-6">
+                    <button id="ptab-school" onclick="switchPhoneTab('school')" class="phone-tab px-5 py-3 text-sm font-medium border-b-2 border-blue-600 text-blue-600 flex items-center gap-2">
+                        <i data-lucide="building-2" class="w-4 h-4"></i>
+                        <span>智校端</span>
+                    </button>
+                    <button id="ptab-home" onclick="switchPhoneTab('home')" class="phone-tab px-5 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 flex items-center gap-2">
+                        <i data-lucide="home" class="w-4 h-4"></i>
+                        <span>家校端</span>
+                    </button>
+                    <button id="ptab-principal" onclick="switchPhoneTab('principal')" class="phone-tab px-5 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 flex items-center gap-2">
+                        <i data-lucide="monitor" class="w-4 h-4"></i>
+                        <span>校长数据大屏</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 内容区域 -->
+            <div class="p-8">
+                <!-- 智校端 Tab -->
+                <div id="pview-school" class="demo-content active">
+                    <div class="bg-white rounded-xl p-8 border border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
+                            <i data-lucide="building-2" class="w-5 h-5 text-blue-600"></i>
+                            智校端 - 体育老师上课场景
+                        </h3>
+                        
+                        <!-- 手机模型 -->
+                        <div class="flex justify-center">
+                            <div class="phone-mockup">
+                                <div class="phone-notch"></div>
+                                <div class="phone-screen">
+                                    <!-- 智校端APP界面 - 体育老师上课场景 -->
+                                    <!-- 顶部导航栏 -->
+                                    <div class="bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between sticky top-0 z-10">
+                                        <div class="flex items-center gap-2">
+                                            <i data-lucide="chevron-left" class="w-6 h-6 text-gray-700"></i>
+                                        </div>
+                                        <h4 class="text-lg font-semibold text-gray-900">课堂体测</h4>
+                                        <div class="flex items-center gap-2">
+                                            <select class="px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700 font-medium focus:outline-none">
+                                                <option>三年级2班</option>
+                                                <option>三年级3班</option>
+                                                <option>三年级4班</option>
+                                                <option>三年级5班</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 内容区域 -->
+                                    <div class="bg-gray-50 min-h-full">
+                                        <!-- 课堂信息卡片 -->
+                                        <div class="bg-white p-4 mb-2">
+                                            <div class="flex items-center justify-between mb-3">
+                                                <div>
+                                                    <div class="text-sm text-gray-500">当前课堂</div>
+                                                    <div class="text-lg font-bold text-gray-900 mt-1">体育课</div>
+                                                </div>
+                                                <div class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                                                    进行中
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center gap-4 text-sm text-gray-600">
+                                                <div class="flex items-center gap-1">
+                                                    <i data-lucide="clock" class="w-4 h-4"></i>
+                                                    <span>08:30-09:10</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- 本节课体测概况 -->
+                                        <div class="bg-white p-4 mb-2">
+                                            <div class="text-sm font-medium text-gray-900 mb-3">本节课体测概况</div>
+                                            <div class="grid grid-cols-3 gap-3">
+                                                <div class="text-center p-3 bg-blue-50 rounded-lg">
+                                                    <div class="text-2xl font-bold text-blue-600">38</div>
+                                                    <div class="text-xs text-gray-600 mt-1">已测试</div>
+                                                </div>
+                                                <div class="text-center p-3 bg-green-50 rounded-lg">
+                                                    <div class="text-2xl font-bold text-green-600">32</div>
+                                                    <div class="text-xs text-gray-600 mt-1">合格</div>
+                                                </div>
+                                                <div class="text-center p-3 bg-orange-50 rounded-lg">
+                                                    <div class="text-2xl font-bold text-orange-600">6</div>
+                                                    <div class="text-xs text-gray-600 mt-1">待改进</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- 搜索和筛选 -->
+                                        <div class="bg-white p-4 mb-2">
+                                            <div class="flex gap-3 mb-3">
+                                                <!-- 搜索框 -->
+                                                <div class="flex-1 relative">
+                                                    <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"></i>
+                                                    <input type="text" placeholder="搜索学生姓名" class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-500">
+                                                </div>
+                                                <!-- 项目筛选 -->
+                                                <select class="px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:border-blue-500">
+                                                    <option>全部项目</option>
+                                                    <option>50米跑</option>
+                                                    <option>跳绳</option>
+                                                    <option>仰卧起坐</option>
+                                                    <option>坐位体前屈</option>
+                                                    <option>肺活量</option>
+                                                </select>
+                                            </div>
+                                            <div class="flex items-center justify-between text-xs text-gray-500">
+                                                <span>共42人</span>
+                                                <span>已筛选：38人</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- 学生体测记录列表 -->
+                                        <div class="bg-white">
+                                            <div class="px-4 py-3 border-b border-gray-100">
+                                                <div class="text-sm font-medium text-gray-900">学生体测记录</div>
+                                            </div>
+                                            
+                                            <div class="divide-y divide-gray-100">
+                                                <!-- 学生1 - 点击显示详情 -->
+                                                <div class="px-4 py-3 flex items-center justify-between bg-white active:bg-gray-50" onclick="showStudentDetail('张小明', '50米跑', '8.5秒', '优秀')">
+                                                    <div class="flex items-center gap-3 flex-1">
+                                                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-semibold text-sm">
+                                                            张
+                                                        </div>
+                                                        <div class="flex-1">
+                                                            <div class="text-base text-gray-900 font-medium">张小明</div>
+                                                            <div class="text-xs text-gray-500 mt-0.5">50米跑 · 8.5秒</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex items-center gap-2">
+                                                        <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-medium">优秀</span>
+                                                        <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- 学生2 -->
+                                                <div class="px-4 py-3 flex items-center justify-between bg-white active:bg-gray-50">
+                                                    <div class="flex items-center gap-3 flex-1">
+                                                        <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-semibold text-sm">
+                                                            李
+                                                        </div>
+                                                        <div class="flex-1">
+                                                            <div class="text-base text-gray-900 font-medium">李小红</div>
+                                                            <div class="text-xs text-gray-500 mt-0.5">跳绳 · 145个/分</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex items-center gap-2">
+                                                        <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">良好</span>
+                                                        <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- 学生3 -->
+                                                <div class="px-4 py-3 flex items-center justify-between bg-white active:bg-gray-50">
+                                                    <div class="flex items-center gap-3 flex-1">
+                                                        <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 font-semibold text-sm">
+                                                            王
+                                                        </div>
+                                                        <div class="flex-1">
+                                                            <div class="text-base text-gray-900 font-medium">王小强</div>
+                                                            <div class="text-xs text-gray-500 mt-0.5">仰卧起坐 · 28个</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex items-center gap-2">
+                                                        <span class="px-2 py-1 bg-orange-100 text-orange-700 rounded text-xs font-medium">及格</span>
+                                                        <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 学生详情页面（默认隐藏） -->
+                                    <div id="studentDetailPage" class="hidden absolute inset-0 bg-gray-50 z-20">
+                                        <!-- 顶部导航栏 -->
+                                        <div class="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between sticky top-0">
+                                            <div class="flex items-center gap-2" onclick="hideStudentDetail()">
+                                                <i data-lucide="chevron-left" class="w-6 h-6 text-gray-700"></i>
+                                            </div>
+                                            <h4 class="text-lg font-semibold text-gray-900">测试记录</h4>
+                                            <div class="w-6"></div>
+                                        </div>
+                                        
+                                        <!-- 学生测试记录列表 -->
+                                        <div class="overflow-y-auto" style="height: calc(100% - 56px);">
+                                            <!-- 学生信息卡片 -->
+                                            <div class="p-4 bg-white mb-2">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="w-14 h-14 rounded-full bg-blue-500 flex items-center justify-center text-white text-lg font-bold flex-shrink-0">
+                                                        <i data-lucide="user" class="w-7 h-7"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h4 class="text-xl font-bold text-gray-800" id="detailStudentName">张小明</h4>
+                                                        <div class="text-sm text-gray-500 mt-1">三年级2班</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- 测试记录列表 -->
+                                            <div class="p-4">
+                                                <div class="flex items-center justify-between mb-3">
+                                                    <div class="text-sm font-medium text-gray-900">全部测试记录</div>
+                                                    <div class="text-xs text-gray-500">共5次</div>
+                                                </div>
+                                                <div class="space-y-3">
+                                                    <!-- 记录1 - 50米跑 -->
+                                                    <div class="bg-white rounded-xl border border-gray-200 p-4" onclick="showTestReportDetail('50米跑', '8.5秒', '95', '优秀')">
+                                                        <div class="flex items-center justify-between mb-3">
+                                                            <div class="flex items-center gap-2">
+                                                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                                                    <i data-lucide="zap" class="w-5 h-5 text-blue-600"></i>
+                                                                </div>
+                                                                <div>
+                                                                    <div class="text-base font-semibold text-gray-900">50米跑</div>
+                                                                    <div class="text-xs text-gray-500 mt-0.5">2026-05-14 08:35</div>
+                                                                </div>
+                                                            </div>
+                                                            <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-medium">优秀</span>
+                                                        </div>
+                                                        <div class="flex items-center justify-between text-sm">
+                                                            <div class="flex items-center gap-4 text-gray-600">
+                                                                <div class="flex items-center gap-1">
+                                                                    <i data-lucide="timer" class="w-4 h-4"></i>
+                                                                    <span>8.5秒</span>
+                                                                </div>
+                                                                <div class="flex items-center gap-1">
+                                                                    <i data-lucide="trophy" class="w-4 h-4"></i>
+                                                                    <span>95分</span>
+                                                                </div>
+                                                            </div>
+                                                            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- 记录2 - 跳绳 -->
+                                                    <div class="bg-white rounded-xl border border-gray-200 p-4" onclick="showTestReportDetail('跳绳', '145个', '88', '良好')">
+                                                        <div class="flex items-center justify-between mb-3">
+                                                            <div class="flex items-center gap-2">
+                                                                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                                                    <i data-lucide="activity" class="w-5 h-5 text-purple-600"></i>
+                                                                </div>
+                                                                <div>
+                                                                    <div class="text-base font-semibold text-gray-900">跳绳</div>
+                                                                    <div class="text-xs text-gray-500 mt-0.5">2026-05-14 08:42</div>
+                                                                </div>
+                                                            </div>
+                                                            <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">良好</span>
+                                                        </div>
+                                                        <div class="flex items-center justify-between text-sm">
+                                                            <div class="flex items-center gap-4 text-gray-600">
+                                                                <div class="flex items-center gap-1">
+                                                                    <i data-lucide="timer" class="w-4 h-4"></i>
+                                                                    <span>145个</span>
+                                                                </div>
+                                                                <div class="flex items-center gap-1">
+                                                                    <i data-lucide="trophy" class="w-4 h-4"></i>
+                                                                    <span>88分</span>
+                                                                </div>
+                                                            </div>
+                                                            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- 记录3 - 仰卧起坐 -->
+                                                    <div class="bg-white rounded-xl border border-gray-200 p-4" onclick="showTestReportDetail('仰卧起坐', '32个', '82', '良好')">
+                                                        <div class="flex items-center justify-between mb-3">
+                                                            <div class="flex items-center gap-2">
+                                                                <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                                                                    <i data-lucide="flame" class="w-5 h-5 text-orange-600"></i>
+                                                                </div>
+                                                                <div>
+                                                                    <div class="text-base font-semibold text-gray-900">仰卧起坐</div>
+                                                                    <div class="text-xs text-gray-500 mt-0.5">2026-05-14 08:50</div>
+                                                                </div>
+                                                            </div>
+                                                            <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">良好</span>
+                                                        </div>
+                                                        <div class="flex items-center justify-between text-sm">
+                                                            <div class="flex items-center gap-4 text-gray-600">
+                                                                <div class="flex items-center gap-1">
+                                                                    <i data-lucide="timer" class="w-4 h-4"></i>
+                                                                    <span>32个</span>
+                                                                </div>
+                                                                <div class="flex items-center gap-1">
+                                                                    <i data-lucide="trophy" class="w-4 h-4"></i>
+                                                                    <span>82分</span>
+                                                                </div>
+                                                            </div>
+                                                            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- 记录4 - 坐位体前屈 -->
+                                                    <div class="bg-white rounded-xl border border-gray-200 p-4" onclick="showTestReportDetail('坐位体前屈', '15cm', '90', '优秀')">
+                                                        <div class="flex items-center justify-between mb-3">
+                                                            <div class="flex items-center gap-2">
+                                                                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                                                    <i data-lucide="move" class="w-5 h-5 text-green-600"></i>
+                                                                </div>
+                                                                <div>
+                                                                    <div class="text-base font-semibold text-gray-900">坐位体前屈</div>
+                                                                    <div class="text-xs text-gray-500 mt-0.5">2026-05-14 08:58</div>
+                                                                </div>
+                                                            </div>
+                                                            <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-medium">优秀</span>
+                                                        </div>
+                                                        <div class="flex items-center justify-between text-sm">
+                                                            <div class="flex items-center gap-4 text-gray-600">
+                                                                <div class="flex items-center gap-1">
+                                                                    <i data-lucide="timer" class="w-4 h-4"></i>
+                                                                    <span>15cm</span>
+                                                                </div>
+                                                                <div class="flex items-center gap-1">
+                                                                    <i data-lucide="trophy" class="w-4 h-4"></i>
+                                                                    <span>90分</span>
+                                                                </div>
+                                                            </div>
+                                                            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- 记录5 - 肺活量 -->
+                                                    <div class="bg-white rounded-xl border border-gray-200 p-4" onclick="showTestReportDetail('肺活量', '2800ml', '75', '及格')">
+                                                        <div class="flex items-center justify-between mb-3">
+                                                            <div class="flex items-center gap-2">
+                                                                <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                                                    <i data-lucide="wind" class="w-5 h-5 text-red-600"></i>
+                                                                </div>
+                                                                <div>
+                                                                    <div class="text-base font-semibold text-gray-900">肺活量</div>
+                                                                    <div class="text-xs text-gray-500 mt-0.5">2026-05-14 09:05</div>
+                                                                </div>
+                                                            </div>
+                                                            <span class="px-2 py-1 bg-orange-100 text-orange-700 rounded text-xs font-medium">及格</span>
+                                                        </div>
+                                                        <div class="flex items-center justify-between text-sm">
+                                                            <div class="flex items-center gap-4 text-gray-600">
+                                                                <div class="flex items-center gap-1">
+                                                                    <i data-lucide="timer" class="w-4 h-4"></i>
+                                                                    <span>2800ml</span>
+                                                                </div>
+                                                                <div class="flex items-center gap-1">
+                                                                    <i data-lucide="trophy" class="w-4 h-4"></i>
+                                                                    <span>75分</span>
+                                                                </div>
+                                                            </div>
+                                                            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 测试报告详情页面（默认隐藏） -->
+                                    <div id="testReportDetailPage" class="hidden absolute inset-0 bg-gray-50 z-30">
+                                        <!-- 顶部导航栏 -->
+                                        <div class="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between sticky top-0">
+                                            <div class="flex items-center gap-2" onclick="hideTestReportDetail()">
+                                                <i data-lucide="chevron-left" class="w-6 h-6 text-gray-700"></i>
+                                            </div>
+                                            <h4 class="text-lg font-semibold text-gray-900">测试报告</h4>
+                                            <div class="w-6"></div>
+                                        </div>
+                                        
+                                        <!-- 学生详情内容 -->
+                                        <div class="overflow-y-auto" style="height: calc(100% - 56px);">
+                                            <!-- 学生基本信息和成绩 -->
+                                            <div class="p-4 bg-white mb-2">
+                                                <div class="flex items-start gap-4 mb-4">
+                                                    <div class="w-16 h-16 rounded-full bg-blue-500 flex items-center justify-center text-white text-xl font-bold flex-shrink-0">
+                                                        <i data-lucide="user" class="w-8 h-8"></i>
+                                                    </div>
+                                                    <div class="flex-1">
+                                                        <div class="flex items-center gap-2 mb-2">
+                                                            <h4 class="text-xl font-bold text-gray-800" id="detailStudentName">张小明</h4>
+                                                        </div>
+                                                        <div class="space-y-1 text-sm">
+                                                            <div class="flex gap-2">
+                                                                <span class="text-gray-500">班级</span>
+                                                                <span class="text-gray-800">三年级2班</span>
+                                                            </div>
+                                                            <div class="flex gap-2">
+                                                                <span class="text-gray-500">测试项目</span>
+                                                                <span class="text-gray-800" id="detailProject">50米跑</span>
+                                                            </div>
+                                                            <div class="flex gap-2">
+                                                                <span class="text-gray-500">测试时间</span>
+                                                                <span class="text-gray-800">2026-05-14 08:35:22</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- 成绩卡片 -->
+                                                <div class="grid grid-cols-3 gap-2">
+                                                    <div class="bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg p-3 text-white text-center">
+                                                        <i data-lucide="clipboard-check" class="w-5 h-5 mx-auto mb-1"></i>
+                                                        <div class="text-xs opacity-80 mb-1">测试成绩</div>
+                                                        <div class="text-2xl font-bold" id="detailScore">8.5<span class="text-sm">秒</span></div>
+                                                    </div>
+                                                    <div class="border border-gray-200 rounded-lg p-2 text-center">
+                                                        <div class="flex items-center justify-center gap-1 mb-1">
+                                                            <i data-lucide="trophy" class="w-4 h-4 text-amber-500"></i>
+                                                            <span class="text-2xl font-bold text-gray-800">95</span>
+                                                        </div>
+                                                        <div class="text-xs text-gray-500">分数</div>
+                                                    </div>
+                                                    <div class="border border-gray-200 rounded-lg p-2 text-center">
+                                                        <div class="flex items-center justify-center gap-1 mb-1">
+                                                            <i data-lucide="award" class="w-4 h-4 text-green-500"></i>
+                                                            <span class="text-sm font-bold text-gray-800" id="detailGrade">优秀</span>
+                                                        </div>
+                                                        <div class="text-xs text-gray-500">等级</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- 视频播放区域 -->
+                                            <div class="bg-white p-4 mb-2">
+                                                <div class="text-sm font-medium text-gray-900 mb-3">体测视频</div>
+                                                <div class="bg-black rounded-lg aspect-video flex items-center justify-center">
+                                                    <div class="text-center text-white">
+                                                        <i data-lucide="play-circle" class="w-12 h-12 mx-auto mb-2 opacity-80"></i>
+                                                        <div class="text-sm opacity-80">点击播放</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- 运动参数 -->
+                                            <div class="bg-white p-4 mb-2">
+                                                <div class="flex items-center gap-2 mb-3">
+                                                    <i data-lucide="settings" class="w-5 h-5 text-blue-600"></i>
+                                                    <span class="text-sm font-bold text-gray-800">运动参数</span>
+                                                </div>
+                                                <div class="grid grid-cols-2 gap-3">
+                                                    <div class="bg-gray-50 rounded-lg p-3">
+                                                        <div class="text-xs text-gray-500 mb-1">起跑反应时间</div>
+                                                        <div class="flex items-center gap-2">
+                                                            <i data-lucide="zap" class="w-4 h-4 text-blue-600"></i>
+                                                            <span class="text-xl font-bold text-gray-800">0.25</span>
+                                                            <span class="text-sm text-gray-600">秒</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="bg-gray-50 rounded-lg p-3">
+                                                        <div class="text-xs text-gray-500 mb-1">平均速度</div>
+                                                        <div class="flex items-center gap-2">
+                                                            <i data-lucide="gauge" class="w-4 h-4 text-green-600"></i>
+                                                            <span class="text-xl font-bold text-gray-800">5.88</span>
+                                                            <span class="text-sm text-gray-600">米/秒</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="bg-gray-50 rounded-lg p-3">
+                                                        <div class="text-xs text-gray-500 mb-1">最高速度</div>
+                                                        <div class="flex items-center gap-2">
+                                                            <i data-lucide="trending-up" class="w-4 h-4 text-purple-600"></i>
+                                                            <span class="text-xl font-bold text-gray-800">6.50</span>
+                                                            <span class="text-sm text-gray-600">米/秒</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="bg-gray-50 rounded-lg p-3">
+                                                        <div class="text-xs text-gray-500 mb-1">加速时间</div>
+                                                        <div class="flex items-center gap-2">
+                                                            <i data-lucide="clock" class="w-4 h-4 text-orange-600"></i>
+                                                            <span class="text-xl font-bold text-gray-800">2.1</span>
+                                                            <span class="text-sm text-gray-600">秒</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- 底部操作按钮 -->
+                                            <div class="p-4">
+                                                <button onclick="showScoreSetting()" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3.5 rounded-xl font-semibold text-base shadow-lg shadow-blue-500/30">
+                                                    <i data-lucide="settings" class="w-5 h-5 inline mr-2"></i>
+                                                    成绩设置
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 text-center text-sm text-gray-500">
+                            <p> 提示：点击学生列表中的学生，可以查看体测详情（视频+指标）</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 成绩设置弹窗 -->
+                    <div id="scoreSettingModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+                        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full">
+                            <div class="p-6 border-b border-gray-200 flex items-center justify-between">
+                                <h3 class="text-lg font-bold text-gray-800">成绩设置</h3>
+                                <button onclick="closeModal('scoreSettingModal')" class="text-gray-500 hover:text-gray-700">
+                                    <i data-lucide="x" class="w-6 h-6"></i>
+                                </button>
+                            </div>
+                            <div class="p-6 space-y-4">
+                                <div class="bg-gray-50 rounded-lg p-4 space-y-3">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-500">学生姓名</span>
+                                        <span class="text-gray-900 font-medium">张小明</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-500">测试项目</span>
+                                        <span class="text-gray-900 font-medium">50米跑</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-500">测试成绩</span>
+                                        <span class="text-gray-900 font-medium">8.5秒</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">成绩状态</label>
+                                    <select id="scoreStatusSelect" class="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="valid">有效</option>
+                                        <option value="invalid">无效</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">备注说明</label>
+                                    <textarea class="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" rows="3" placeholder="请输入备注（可选）"></textarea>
+                                </div>
+                            </div>
+                            <div class="p-6 border-t border-gray-200 flex gap-3">
+                                <button onclick="closeModal('scoreSettingModal')" class="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50">
+                                    取消
+                                </button>
+                                <button onclick="saveScoreStatus()" class="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700">
+                                    保存
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 家校端 Tab -->
+                <div id="pview-home" class="demo-content">
+                    <div class="bg-white rounded-xl p-8 border border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
+                            <i data-lucide="home" class="w-5 h-5 text-green-600"></i>
+                            家校端 - 家长学生界面
+                        </h3>
+                        
+                        <!-- 手机模型 -->
+                        <div class="flex justify-center">
+                            <div class="phone-mockup">
+                                <div class="phone-notch"></div>
+                                <div class="phone-screen">
+                                    <!-- 家校端APP界面 -->
+                                    <!-- 顶部导航栏 -->
+                                    <div class="bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between sticky top-0 z-10">
+                                        <div class="flex items-center gap-2">
+                                            <i data-lucide="chevron-left" class="w-6 h-6 text-gray-700"></i>
+                                        </div>
+                                        <h4 class="text-lg font-semibold text-gray-900">我的运动</h4>
+                                        <div class="w-6"></div>
+                                    </div>
+                                    
+                                    <!-- 内容区域 -->
+                                    <div class="overflow-y-auto bg-gray-50" style="height: calc(100% - 56px);">
+                                        <!-- 学生信息 + 综合数据卡片 -->
+                                        <div class="p-4">
+                                            <div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl p-5 text-white shadow-lg shadow-green-500/30">
+                                                <div class="flex items-center gap-3 mb-4">
+                                                    <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur flex items-center justify-center flex-shrink-0">
+                                                        <i data-lucide="user" class="w-6 h-6 text-white"></i>
+                                                    </div>
+                                                    <div class="flex-1">
+                                                        <div class="text-base font-bold">张小明</div>
+                                                        <div class="text-xs opacity-90 mt-0.5">三年级2班 · 学号 90015</div>
+                                                    </div>
+                                                    <span class="px-2 py-1 bg-white/20 backdrop-blur rounded text-xs">我的孩子</span>
+                                                </div>
+                                                <div class="grid grid-cols-3 gap-3 pt-4 border-t border-white/20">
+                                                    <div>
+                                                        <div class="text-xs opacity-90">本周达标</div>
+                                                        <div class="text-xl font-bold mt-1">85%</div>
+                                                    </div>
+                                                    <div>
+                                                        <div class="text-xs opacity-90">测试次数</div>
+                                                        <div class="text-xl font-bold mt-1">5<span class="text-xs ml-0.5">次</span></div>
+                                                    </div>
+                                                    <div>
+                                                        <div class="text-xs opacity-90">综合评级</div>
+                                                        <div class="text-xl font-bold mt-1">良好</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- 测试记录列表 -->
+                                        <div class="px-4 pb-4">
+                                            <div class="flex items-center justify-between mb-3">
+                                                <div class="text-sm font-semibold text-gray-900 flex items-center gap-1.5">
+                                                    <i data-lucide="clipboard-list" class="w-4 h-4 text-green-600"></i>
+                                                    全部测试记录
+                                                </div>
+                                                <div class="text-xs text-gray-500">共5次</div>
+                                            </div>
+                                            <div class="space-y-3">
+                                                <!-- 记录1 - 50米跑 -->
+                                                <div class="bg-white rounded-xl border border-gray-200 p-4 active:bg-gray-50" onclick="showHomeTestReport('50米跑', '8.5秒', '95', '优秀')">
+                                                    <div class="flex items-center justify-between mb-3">
+                                                        <div class="flex items-center gap-2">
+                                                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                                                <i data-lucide="zap" class="w-5 h-5 text-blue-600"></i>
+                                                            </div>
+                                                            <div>
+                                                                <div class="text-base font-semibold text-gray-900">50米跑</div>
+                                                                <div class="text-xs text-gray-500 mt-0.5">2026-05-14 08:35</div>
+                                                            </div>
+                                                        </div>
+                                                        <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-medium">优秀</span>
+                                                    </div>
+                                                    <div class="flex items-center justify-between text-sm">
+                                                        <div class="flex items-center gap-4 text-gray-600">
+                                                            <div class="flex items-center gap-1">
+                                                                <i data-lucide="timer" class="w-4 h-4"></i>
+                                                                <span>8.5秒</span>
+                                                            </div>
+                                                            <div class="flex items-center gap-1">
+                                                                <i data-lucide="trophy" class="w-4 h-4"></i>
+                                                                <span>95分</span>
+                                                            </div>
+                                                        </div>
+                                                        <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- 记录2 - 跳绳 -->
+                                                <div class="bg-white rounded-xl border border-gray-200 p-4 active:bg-gray-50" onclick="showHomeTestReport('跳绳', '145个', '88', '良好')">
+                                                    <div class="flex items-center justify-between mb-3">
+                                                        <div class="flex items-center gap-2">
+                                                            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                                                <i data-lucide="activity" class="w-5 h-5 text-purple-600"></i>
+                                                            </div>
+                                                            <div>
+                                                                <div class="text-base font-semibold text-gray-900">跳绳</div>
+                                                                <div class="text-xs text-gray-500 mt-0.5">2026-05-14 08:42</div>
+                                                            </div>
+                                                        </div>
+                                                        <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">良好</span>
+                                                    </div>
+                                                    <div class="flex items-center justify-between text-sm">
+                                                        <div class="flex items-center gap-4 text-gray-600">
+                                                            <div class="flex items-center gap-1">
+                                                                <i data-lucide="timer" class="w-4 h-4"></i>
+                                                                <span>145个</span>
+                                                            </div>
+                                                            <div class="flex items-center gap-1">
+                                                                <i data-lucide="trophy" class="w-4 h-4"></i>
+                                                                <span>88分</span>
+                                                            </div>
+                                                        </div>
+                                                        <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- 记录3 - 仰卧起坐 -->
+                                                <div class="bg-white rounded-xl border border-gray-200 p-4 active:bg-gray-50" onclick="showHomeTestReport('仰卧起坐', '32个', '82', '良好')">
+                                                    <div class="flex items-center justify-between mb-3">
+                                                        <div class="flex items-center gap-2">
+                                                            <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                                                                <i data-lucide="flame" class="w-5 h-5 text-orange-600"></i>
+                                                            </div>
+                                                            <div>
+                                                                <div class="text-base font-semibold text-gray-900">仰卧起坐</div>
+                                                                <div class="text-xs text-gray-500 mt-0.5">2026-05-14 08:50</div>
+                                                            </div>
+                                                        </div>
+                                                        <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">良好</span>
+                                                    </div>
+                                                    <div class="flex items-center justify-between text-sm">
+                                                        <div class="flex items-center gap-4 text-gray-600">
+                                                            <div class="flex items-center gap-1">
+                                                                <i data-lucide="timer" class="w-4 h-4"></i>
+                                                                <span>32个</span>
+                                                            </div>
+                                                            <div class="flex items-center gap-1">
+                                                                <i data-lucide="trophy" class="w-4 h-4"></i>
+                                                                <span>82分</span>
+                                                            </div>
+                                                        </div>
+                                                        <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- 记录4 - 坐位体前屈 -->
+                                                <div class="bg-white rounded-xl border border-gray-200 p-4 active:bg-gray-50" onclick="showHomeTestReport('坐位体前屈', '15cm', '90', '优秀')">
+                                                    <div class="flex items-center justify-between mb-3">
+                                                        <div class="flex items-center gap-2">
+                                                            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                                                <i data-lucide="move" class="w-5 h-5 text-green-600"></i>
+                                                            </div>
+                                                            <div>
+                                                                <div class="text-base font-semibold text-gray-900">坐位体前屈</div>
+                                                                <div class="text-xs text-gray-500 mt-0.5">2026-05-14 08:58</div>
+                                                            </div>
+                                                        </div>
+                                                        <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-medium">优秀</span>
+                                                    </div>
+                                                    <div class="flex items-center justify-between text-sm">
+                                                        <div class="flex items-center gap-4 text-gray-600">
+                                                            <div class="flex items-center gap-1">
+                                                                <i data-lucide="timer" class="w-4 h-4"></i>
+                                                                <span>15cm</span>
+                                                            </div>
+                                                            <div class="flex items-center gap-1">
+                                                                <i data-lucide="trophy" class="w-4 h-4"></i>
+                                                                <span>90分</span>
+                                                            </div>
+                                                        </div>
+                                                        <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- 记录5 - 肺活量 -->
+                                                <div class="bg-white rounded-xl border border-gray-200 p-4 active:bg-gray-50" onclick="showHomeTestReport('肺活量', '2800ml', '75', '及格')">
+                                                    <div class="flex items-center justify-between mb-3">
+                                                        <div class="flex items-center gap-2">
+                                                            <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                                                <i data-lucide="wind" class="w-5 h-5 text-red-600"></i>
+                                                            </div>
+                                                            <div>
+                                                                <div class="text-base font-semibold text-gray-900">肺活量</div>
+                                                                <div class="text-xs text-gray-500 mt-0.5">2026-05-14 09:05</div>
+                                                            </div>
+                                                        </div>
+                                                        <span class="px-2 py-1 bg-orange-100 text-orange-700 rounded text-xs font-medium">及格</span>
+                                                    </div>
+                                                    <div class="flex items-center justify-between text-sm">
+                                                        <div class="flex items-center gap-4 text-gray-600">
+                                                            <div class="flex items-center gap-1">
+                                                                <i data-lucide="timer" class="w-4 h-4"></i>
+                                                                <span>2800ml</span>
+                                                            </div>
+                                                            <div class="flex items-center gap-1">
+                                                                <i data-lucide="trophy" class="w-4 h-4"></i>
+                                                                <span>75分</span>
+                                                            </div>
+                                                        </div>
+                                                        <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 家校端测试报告详情页面（默认隐藏） -->
+                                    <div id="homeTestReportPage" class="hidden absolute inset-0 bg-gray-50 z-30">
+                                        <!-- 顶部导航栏 -->
+                                        <div class="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between sticky top-0">
+                                            <div class="flex items-center gap-2" onclick="hideHomeTestReport()">
+                                                <i data-lucide="chevron-left" class="w-6 h-6 text-gray-700"></i>
+                                            </div>
+                                            <h4 class="text-lg font-semibold text-gray-900">测试报告</h4>
+                                            <div class="w-6"></div>
+                                        </div>
+                                        
+                                        <!-- 测试报告内容 -->
+                                        <div class="overflow-y-auto" style="height: calc(100% - 56px);">
+                                            <!-- 学生基本信息和成绩 -->
+                                            <div class="p-4 bg-white mb-2">
+                                                <div class="flex items-start gap-4 mb-4">
+                                                    <div class="w-16 h-16 rounded-full bg-green-500 flex items-center justify-center text-white text-xl font-bold flex-shrink-0">
+                                                        <i data-lucide="user" class="w-8 h-8"></i>
+                                                    </div>
+                                                    <div class="flex-1">
+                                                        <div class="flex items-center gap-2 mb-2">
+                                                            <h4 class="text-xl font-bold text-gray-800">张小明</h4>
+                                                        </div>
+                                                        <div class="space-y-1 text-sm">
+                                                            <div class="flex gap-2">
+                                                                <span class="text-gray-500">班级</span>
+                                                                <span class="text-gray-800">三年级2班</span>
+                                                            </div>
+                                                            <div class="flex gap-2">
+                                                                <span class="text-gray-500">测试项目</span>
+                                                                <span class="text-gray-800" id="homeDetailProject">50米跑</span>
+                                                            </div>
+                                                            <div class="flex gap-2">
+                                                                <span class="text-gray-500">测试时间</span>
+                                                                <span class="text-gray-800">2026-05-14 08:35:22</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- 成绩卡片 -->
+                                                <div class="grid grid-cols-3 gap-2">
+                                                    <div class="bg-gradient-to-br from-green-400 to-green-600 rounded-lg p-3 text-white text-center">
+                                                        <i data-lucide="clipboard-check" class="w-5 h-5 mx-auto mb-1"></i>
+                                                        <div class="text-xs opacity-80 mb-1">测试成绩</div>
+                                                        <div class="text-2xl font-bold" id="homeDetailScore">8.5<span class="text-sm">秒</span></div>
+                                                    </div>
+                                                    <div class="border border-gray-200 rounded-lg p-2 text-center">
+                                                        <div class="flex items-center justify-center gap-1 mb-1">
+                                                            <i data-lucide="trophy" class="w-4 h-4 text-amber-500"></i>
+                                                            <span class="text-2xl font-bold text-gray-800" id="homeDetailPoint">95</span>
+                                                        </div>
+                                                        <div class="text-xs text-gray-500">分数</div>
+                                                    </div>
+                                                    <div class="border border-gray-200 rounded-lg p-2 text-center">
+                                                        <div class="flex items-center justify-center gap-1 mb-1">
+                                                            <i data-lucide="award" class="w-4 h-4 text-green-500"></i>
+                                                            <span class="text-sm font-bold text-gray-800" id="homeDetailGrade">优秀</span>
+                                                        </div>
+                                                        <div class="text-xs text-gray-500">等级</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- 视频播放区域 -->
+                                            <div class="bg-white p-4 mb-2">
+                                                <div class="text-sm font-medium text-gray-900 mb-3">体测视频</div>
+                                                <div class="bg-black rounded-lg aspect-video flex items-center justify-center">
+                                                    <div class="text-center text-white">
+                                                        <i data-lucide="play-circle" class="w-12 h-12 mx-auto mb-2 opacity-80"></i>
+                                                        <div class="text-sm opacity-80">点击播放</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- 运动参数 -->
+                                            <div class="bg-white p-4 mb-2">
+                                                <div class="flex items-center gap-2 mb-3">
+                                                    <i data-lucide="settings" class="w-5 h-5 text-green-600"></i>
+                                                    <span class="text-sm font-bold text-gray-800">运动参数</span>
+                                                </div>
+                                                <div class="grid grid-cols-2 gap-3">
+                                                    <div class="bg-gray-50 rounded-lg p-3">
+                                                        <div class="text-xs text-gray-500 mb-1">起跑反应时间</div>
+                                                        <div class="flex items-center gap-2">
+                                                            <i data-lucide="zap" class="w-4 h-4 text-blue-600"></i>
+                                                            <span class="text-xl font-bold text-gray-800">0.25</span>
+                                                            <span class="text-sm text-gray-600">秒</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="bg-gray-50 rounded-lg p-3">
+                                                        <div class="text-xs text-gray-500 mb-1">平均速度</div>
+                                                        <div class="flex items-center gap-2">
+                                                            <i data-lucide="gauge" class="w-4 h-4 text-green-600"></i>
+                                                            <span class="text-xl font-bold text-gray-800">5.88</span>
+                                                            <span class="text-sm text-gray-600">米/秒</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="bg-gray-50 rounded-lg p-3">
+                                                        <div class="text-xs text-gray-500 mb-1">最高速度</div>
+                                                        <div class="flex items-center gap-2">
+                                                            <i data-lucide="trending-up" class="w-4 h-4 text-purple-600"></i>
+                                                            <span class="text-xl font-bold text-gray-800">6.50</span>
+                                                            <span class="text-sm text-gray-600">米/秒</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="bg-gray-50 rounded-lg p-3">
+                                                        <div class="text-xs text-gray-500 mb-1">加速时间</div>
+                                                        <div class="flex items-center gap-2">
+                                                            <i data-lucide="clock" class="w-4 h-4 text-orange-600"></i>
+                                                            <span class="text-xl font-bold text-gray-800">2.1</span>
+                                                            <span class="text-sm text-gray-600">秒</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- 老师评语 -->
+                                            <div class="bg-white p-4 mb-2">
+                                                <div class="flex items-center gap-2 mb-3">
+                                                    <i data-lucide="message-circle" class="w-5 h-5 text-green-600"></i>
+                                                    <span class="text-sm font-bold text-gray-800">老师评语</span>
+                                                </div>
+                                                <div class="bg-green-50 rounded-lg p-3 text-sm text-gray-700 leading-relaxed">
+                                                    本次测试发挥稳定，起跑反应较快，整体表现优秀，请继续保持训练强度。
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 text-center text-sm text-gray-500">
+                            <p>💡 家长直接查看孩子全部测试记录，点击任意记录可查看详细测试报告</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 校长数据大屏 Tab -->
+                <div id="pview-principal" class="demo-content">
+                    <div class="bg-white rounded-xl p-8 border border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
+                            <i data-lucide="monitor" class="w-5 h-5 text-purple-600"></i>
+                            校长数据大屏 - 在线课堂
+                        </h3>
+
+                        <!-- 大屏容器（深蓝主题） -->
+                        <div class="rounded-2xl overflow-hidden shadow-2xl relative" style="background: linear-gradient(135deg, #0a1628 0%, #0d1f3c 30%, #091428 60%, #061220 100%); aspect-ratio: 16/9; box-shadow: 0 0 60px rgba(34,211,238,0.15), inset 0 0 100px rgba(0,0,0,0.5);">
+                            <!-- 装饰背景：径向渐变光晕 + 网格 -->
+                            <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(ellipse at 30% 20%, rgba(34,211,238,0.08) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(59,130,246,0.06) 0%, transparent 50%);"></div>
+                            <div class="absolute inset-0 pointer-events-none" style="background-image: linear-gradient(rgba(34,211,238,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(34,211,238,0.03) 1px, transparent 1px); background-size: 40px 40px;"></div>
+                            <!-- 四角装饰 -->
+                            <div class="absolute top-2 left-2 w-6 h-6 border-t-2 border-l-2" style="border-color: rgba(34,211,238,0.5);"></div>
+                            <div class="absolute top-2 right-2 w-6 h-6 border-t-2 border-r-2" style="border-color: rgba(34,211,238,0.5);"></div>
+                            <div class="absolute bottom-2 left-2 w-6 h-6 border-b-2 border-l-2" style="border-color: rgba(34,211,238,0.5);"></div>
+                            <div class="absolute bottom-2 right-2 w-6 h-6 border-b-2 border-r-2" style="border-color: rgba(34,211,238,0.5);"></div>
+
+                            <!-- 顶部标题栏 -->
+                            <div class="relative px-8 py-4 flex items-center justify-between" style="background: linear-gradient(180deg, rgba(34,211,238,0.08) 0%, transparent 100%); border-bottom: 1px solid rgba(34,211,238,0.15);">
+                                <div class="flex-1 flex items-center gap-2">
+                                    <div class="h-px flex-1" style="background: linear-gradient(90deg, transparent, rgba(34,211,238,0.6));"></div>
+                                    <div class="w-2 h-2 rounded-full" style="background: #22d3ee; box-shadow: 0 0 10px #22d3ee;"></div>
+                                </div>
+                                <div class="px-8 relative">
+                                    <h2 class="text-3xl font-bold tracking-[0.5em] relative" style="color: #67e8f9; text-shadow: 0 0 20px rgba(34,211,238,0.8), 0 0 40px rgba(34,211,238,0.4);">
+                                        校 园 体 育 数 据 大 屏
+                                    </h2>
+                                    <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3/4 h-px" style="background: linear-gradient(90deg, transparent, rgba(34,211,238,0.6), transparent);"></div>
+                                </div>
+                                <div class="flex-1 flex items-center justify-end gap-3">
+                                    <div class="w-2 h-2 rounded-full" style="background: #22d3ee; box-shadow: 0 0 10px #22d3ee;"></div>
+                                    <div class="h-px flex-1" style="background: linear-gradient(90deg, rgba(34,211,238,0.6), transparent);"></div>
+                                    <div class="text-right text-white whitespace-nowrap ml-3">
+                                        <div class="text-sm" style="color: rgba(34,211,238,0.8);">星期三 2026/05/13</div>
+                                        <div class="text-3xl font-bold tracking-wider" style="color: #fff; text-shadow: 0 0 10px rgba(34,211,238,0.5);">14:25</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 主体：左右两栏（智慧体锻 + 智慧体测） -->
+                            <div class="relative grid grid-cols-2 gap-5 p-5" style="height: calc(100% - 90px);">
+
+                                <!-- 左栏：智慧体锻 -->
+                                <div class="rounded-xl p-4 relative flex flex-col gap-4" style="background: linear-gradient(135deg, rgba(10,25,50,0.7) 0%, rgba(8,20,45,0.8) 100%); border: 1px solid rgba(34,211,238,0.25); box-shadow: 0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);">
+                                    <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 px-5 py-1 text-sm text-cyan-300 tracking-[0.3em] font-bold rounded-full" style="background: linear-gradient(90deg, rgba(10,25,50,0.95), rgba(34,211,238,0.15), rgba(10,25,50,0.95)); border: 1px solid rgba(34,211,238,0.3); box-shadow: 0 0 15px rgba(34,211,238,0.3);">智 慧 体 锻</div>
+
+                                    <!-- 第一行：三个核心指标 -->
+                                    <div class="grid grid-cols-3 gap-3">
+                                        <div class="rounded-lg p-3 text-center relative overflow-hidden" style="background: linear-gradient(135deg, rgba(8,25,50,0.8) 0%, rgba(6,18,40,0.9) 100%); border: 1px solid rgba(34,211,238,0.3); box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
+                                            <div class="absolute top-0 left-0 w-full h-0.5" style="background: linear-gradient(90deg, transparent, #22d3ee, transparent);"></div>
+                                            <div class="text-xs mb-1" style="color: rgba(34,211,238,0.8);">全校运动人数</div>
+                                            <div class="text-2xl font-bold" style="color: #fbbf24; text-shadow: 0 0 10px rgba(251,191,36,0.4);">618<span class="text-sm">人</span></div>
+                                            <div class="text-[10px] mt-1" style="color: rgba(34,211,238,0.5);">总人数 1233人</div>
+                                        </div>
+                                        <div class="rounded-lg p-3 text-center relative overflow-hidden" style="background: linear-gradient(135deg, rgba(8,25,50,0.8) 0%, rgba(6,18,40,0.9) 100%); border: 1px solid rgba(34,211,238,0.3); box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
+                                            <div class="absolute top-0 left-0 w-full h-0.5" style="background: linear-gradient(90deg, transparent, #22d3ee, transparent);"></div>
+                                            <div class="text-xs mb-1" style="color: rgba(34,211,238,0.8);">男女比例</div>
+                                            <div class="flex justify-center gap-3 mt-1">
+                                                <div class="text-xs"><span style="color: #3b82f6; text-shadow: 0 0 5px rgba(59,130,246,0.4);">男 61.5%</span></div>
+                                                <div class="text-xs"><span style="color: #ec4899; text-shadow: 0 0 5px rgba(236,72,153,0.4);">女 38.5%</span></div>
+                                            </div>
+                                        </div>
+                                        <div class="rounded-lg p-3 text-center relative overflow-hidden" style="background: linear-gradient(135deg, rgba(8,25,50,0.8) 0%, rgba(6,18,40,0.9) 100%); border: 1px solid rgba(34,211,238,0.3); box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
+                                            <div class="absolute top-0 left-0 w-full h-0.5" style="background: linear-gradient(90deg, transparent, #22d3ee, transparent);"></div>
+                                            <div class="text-xs mb-1" style="color: rgba(34,211,238,0.8);">运动总时长</div>
+                                            <div class="text-2xl font-bold" style="color: #fbbf24; text-shadow: 0 0 10px rgba(251,191,36,0.4);">5546<span class="text-sm">分</span></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 第二行：各年级运动人数 + 人均运动时长 -->
+                                    <div class="grid grid-cols-2 gap-3 flex-1">
+                                        <div class="rounded-lg p-3 relative overflow-hidden" style="background: linear-gradient(135deg, rgba(8,25,50,0.6) 0%, rgba(6,18,40,0.7) 100%); border: 1px solid rgba(34,211,238,0.2); box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);">
+                                            <div class="text-xs mb-2 text-center tracking-wider" style="color: rgba(34,211,238,0.9);">各年级运动人数</div>
+                                            <svg viewBox="0 0 300 180" class="w-full h-full">
+                                                <defs>
+                                                    <linearGradient id="blueGrad" x1="0" y1="1" x2="0" y2="0">
+                                                        <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.8"/>
+                                                        <stop offset="100%" style="stop-color:#60a5fa;stop-opacity:1"/>
+                                                    </linearGradient>
+                                                    <linearGradient id="pinkGrad" x1="0" y1="1" x2="0" y2="0">
+                                                        <stop offset="0%" style="stop-color:#ec4899;stop-opacity:0.8"/>
+                                                        <stop offset="100%" style="stop-color:#f472b6;stop-opacity:1"/>
+                                                    </linearGradient>
+                                                </defs>
+                                                <g fill="rgba(255,255,255,0.03)">
+                                                    <line x1="30" y1="20" x2="280" y2="20"/><line x1="30" y1="60" x2="280" y2="60"/>
+                                                    <line x1="30" y1="100" x2="280" y2="100"/><line x1="30" y1="140" x2="280" y2="140"/>
+                                                </g>
+                                                <rect x="40" y="100" width="20" height="40" fill="url(#blueGrad)" rx="2"/><text x="50" y="96" fill="#fff" font-size="8" text-anchor="middle" style="font-weight: bold;">120</text>
+                                                <rect x="65" y="80" width="20" height="60" fill="url(#pinkGrad)" rx="2"/><text x="75" y="76" fill="#fff" font-size="8" text-anchor="middle" style="font-weight: bold;">85</text>
+                                                <rect x="110" y="90" width="20" height="50" fill="url(#blueGrad)" rx="2"/><text x="120" y="86" fill="#fff" font-size="8" text-anchor="middle" style="font-weight: bold;">108</text>
+                                                <rect x="135" y="70" width="20" height="70" fill="url(#pinkGrad)" rx="2"/><text x="145" y="66" fill="#fff" font-size="8" text-anchor="middle" style="font-weight: bold;">92</text>
+                                                <rect x="180" y="85" width="20" height="55" fill="url(#blueGrad)" rx="2"/><text x="190" y="81" fill="#fff" font-size="8" text-anchor="middle" style="font-weight: bold;">115</text>
+                                                <rect x="205" y="75" width="20" height="65" fill="url(#pinkGrad)" rx="2"/><text x="215" y="71" fill="#fff" font-size="8" text-anchor="middle" style="font-weight: bold;">88</text>
+                                                <text x="55" y="155" fill="rgba(255,255,255,0.6)" font-size="9" text-anchor="middle">一</text>
+                                                <text x="125" y="155" fill="rgba(255,255,255,0.6)" font-size="9" text-anchor="middle">二</text>
+                                                <text x="195" y="155" fill="rgba(255,255,255,0.6)" font-size="9" text-anchor="middle">三</text>
+                                                <text x="7" y="24" fill="rgba(34,211,238,0.7)" font-size="8">150</text>
+                                                <text x="7" y="64" fill="rgba(34,211,238,0.7)" font-size="8">100</text>
+                                                <text x="7" y="104" fill="rgba(34,211,238,0.7)" font-size="8">50</text>
+                                                <text x="7" y="144" fill="rgba(34,211,238,0.7)" font-size="8">0</text>
+                                            </svg>
+                                            <div class="flex justify-center gap-3 text-[9px] mt-1">
+                                                <span style="color: rgba(34,211,238,0.8);"><span class="inline-block w-2 h-2 rounded-sm mr-1" style="background: #3b82f6;"></span>男</span>
+                                                <span style="color: rgba(34,211,238,0.8);"><span class="inline-block w-2 h-2 rounded-sm mr-1" style="background: #ec4899;"></span>女</span>
+                                            </div>
+                                        </div>
+                                        <div class="rounded-lg p-3 relative overflow-hidden" style="background: linear-gradient(135deg, rgba(8,25,50,0.6) 0%, rgba(6,18,40,0.7) 100%); border: 1px solid rgba(34,211,238,0.2); box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);">
+                                            <div class="text-xs mb-2 text-center tracking-wider" style="color: rgba(34,211,238,0.9);">人均运动时长(分)</div>
+                                            <svg viewBox="0 0 300 180" class="w-full h-full">
+                                                <defs>
+                                                    <linearGradient id="cyanGrad" x1="0" y1="1" x2="0" y2="0">
+                                                        <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:0.8"/>
+                                                        <stop offset="100%" style="stop-color:#22d3ee;stop-opacity:1"/>
+                                                    </linearGradient>
+                                                </defs>
+                                                <g fill="rgba(255,255,255,0.03)">
+                                                    <line x1="30" y1="20" x2="280" y2="20"/><line x1="30" y1="60" x2="280" y2="60"/>
+                                                    <line x1="30" y1="100" x2="280" y2="100"/><line x1="30" y1="140" x2="280" y2="140"/>
+                                                </g>
+                                                <rect x="50" y="70" width="35" height="70" fill="url(#cyanGrad)" rx="2"/><text x="67" y="66" fill="#fff" font-size="9" text-anchor="middle" style="font-weight: bold;">9.2</text>
+                                                <rect x="120" y="85" width="35" height="55" fill="url(#cyanGrad)" rx="2"/><text x="137" y="81" fill="#fff" font-size="9" text-anchor="middle" style="font-weight: bold;">7.8</text>
+                                                <rect x="190" y="75" width="35" height="65" fill="url(#cyanGrad)" rx="2"/><text x="207" y="71" fill="#fff" font-size="9" text-anchor="middle" style="font-weight: bold;">8.5</text>
+                                                <text x="67" y="155" fill="rgba(255,255,255,0.6)" font-size="9" text-anchor="middle">一</text>
+                                                <text x="137" y="155" fill="rgba(255,255,255,0.6)" font-size="9" text-anchor="middle">二</text>
+                                                <text x="207" y="155" fill="rgba(255,255,255,0.6)" font-size="9" text-anchor="middle">三</text>
+                                                <text x="7" y="24" fill="rgba(34,211,238,0.7)" font-size="8">12</text>
+                                                <text x="7" y="64" fill="rgba(34,211,238,0.7)" font-size="8">8</text>
+                                                <text x="7" y="104" fill="rgba(34,211,238,0.7)" font-size="8">4</text>
+                                                <text x="7" y="144" fill="rgba(34,211,238,0.7)" font-size="8">0</text>
+                                            </svg>
+                                            <div class="flex justify-center gap-2 text-[9px] mt-1">
+                                                <span style="color: rgba(34,211,238,0.8);"><span class="inline-block w-2 h-2 rounded-sm mr-1" style="background: #22d3ee;"></span>人均时长</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 第三行：体能训练项目 + 休闲锻炼项目 -->
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div class="rounded-lg p-3 relative overflow-hidden" style="background: linear-gradient(135deg, rgba(8,25,50,0.6) 0%, rgba(6,18,40,0.7) 100%); border: 1px solid rgba(34,211,238,0.2);">
+                                            <div class="text-xs mb-2 text-center tracking-wider" style="color: rgba(34,211,238,0.9);">体能训练项目</div>
+                                            <div class="space-y-2">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-[10px]" style="color: rgba(34,211,238,0.8); width: 45px;">50米跑</span>
+                                                    <div class="flex-1 h-3 rounded-full overflow-hidden" style="background: rgba(255,255,255,0.05); box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);">
+                                                        <div class="h-full rounded-full" style="width:72%; background: linear-gradient(90deg,#3b82f6,#60a5fa); box-shadow: 0 0 8px rgba(59,130,246,0.5);"></div>
+                                                    </div>
+                                                    <span class="text-[10px] font-bold" style="color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.3);">72%</span>
+                                                </div>
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-[10px]" style="color: rgba(34,211,238,0.8); width: 45px;">立定跳远</span>
+                                                    <div class="flex-1 h-3 rounded-full overflow-hidden" style="background: rgba(255,255,255,0.05); box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);">
+                                                        <div class="h-full rounded-full" style="width:65%; background: linear-gradient(90deg,#6366f1,#818cf8); box-shadow: 0 0 8px rgba(99,102,241,0.5);"></div>
+                                                    </div>
+                                                    <span class="text-[10px] font-bold" style="color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.3);">65%</span>
+                                                </div>
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-[10px]" style="color: rgba(34,211,238,0.8); width: 45px;">跳绳</span>
+                                                    <div class="flex-1 h-3 rounded-full overflow-hidden" style="background: rgba(255,255,255,0.05); box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);">
+                                                        <div class="h-full rounded-full" style="width:85%; background: linear-gradient(90deg,#a855f7,#c084fc); box-shadow: 0 0 8px rgba(168,85,247,0.5);"></div>
+                                                    </div>
+                                                    <span class="text-[10px] font-bold" style="color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.3);">85%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="rounded-lg p-3 relative overflow-hidden" style="background: linear-gradient(135deg, rgba(8,25,50,0.6) 0%, rgba(6,18,40,0.7) 100%); border: 1px solid rgba(34,211,238,0.2);">
+                                            <div class="text-xs mb-2 text-center tracking-wider" style="color: rgba(34,211,238,0.9);">休闲锻炼项目</div>
+                                            <div class="space-y-2">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-[10px]" style="color: rgba(34,211,238,0.8); width: 45px;">散步</span>
+                                                    <div class="flex-1 h-3 rounded-full overflow-hidden" style="background: rgba(255,255,255,0.05); box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);">
+                                                        <div class="h-full rounded-full" style="width:58%; background: linear-gradient(90deg,#10b981,#34d399); box-shadow: 0 0 8px rgba(16,185,129,0.5);"></div>
+                                                    </div>
+                                                    <span class="text-[10px] font-bold" style="color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.3);">58%</span>
+                                                </div>
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-[10px]" style="color: rgba(34,211,238,0.8); width: 45px;">慢跑</span>
+                                                    <div class="flex-1 h-3 rounded-full overflow-hidden" style="background: rgba(255,255,255,0.05); box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);">
+                                                        <div class="h-full rounded-full" style="width:42%; background: linear-gradient(90deg,#14b8a6,#2dd4bf); box-shadow: 0 0 8px rgba(20,184,166,0.5);"></div>
+                                                    </div>
+                                                    <span class="text-[10px] font-bold" style="color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.3);">42%</span>
+                                                </div>
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-[10px]" style="color: rgba(34,211,238,0.8); width: 45px;">球类</span>
+                                                    <div class="flex-1 h-3 rounded-full overflow-hidden" style="background: rgba(255,255,255,0.05); box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);">
+                                                        <div class="h-full rounded-full" style="width:35%; background: linear-gradient(90deg,#06b6d4,#22d3ee); box-shadow: 0 0 8px rgba(6,182,212,0.5);"></div>
+                                                    </div>
+                                                    <span class="text-[10px] font-bold" style="color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.3);">35%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 右栏：智慧体测 -->
+                                <div class="rounded-xl p-4 relative flex flex-col gap-4" style="background: linear-gradient(135deg, rgba(10,25,50,0.7) 0%, rgba(8,20,45,0.8) 100%); border: 1px solid rgba(34,211,238,0.25); box-shadow: 0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);">
+                                    <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 px-5 py-1 text-sm text-cyan-300 tracking-[0.3em] font-bold rounded-full" style="background: linear-gradient(90deg, rgba(10,25,50,0.95), rgba(34,211,238,0.15), rgba(10,25,50,0.95)); border: 1px solid rgba(34,211,238,0.3); box-shadow: 0 0 15px rgba(34,211,238,0.3);">智 慧 体 测</div>
+
+                                    <!-- 第一行：三个核心指标 -->
+                                    <div class="grid grid-cols-3 gap-3">
+                                        <div class="rounded-lg p-3 text-center relative overflow-hidden" style="background: linear-gradient(135deg, rgba(8,25,50,0.8) 0%, rgba(6,18,40,0.9) 100%); border: 1px solid rgba(34,211,238,0.3); box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
+                                            <div class="absolute top-0 left-0 w-full h-0.5" style="background: linear-gradient(90deg, transparent, #22d3ee, transparent);"></div>
+                                            <div class="text-xs mb-1" style="color: rgba(34,211,238,0.8);">测试人数</div>
+                                            <div class="text-2xl font-bold" style="color: #fbbf24; text-shadow: 0 0 10px rgba(251,191,36,0.4);">533<span class="text-sm">人</span></div>
+                                            <div class="text-[10px] mt-1" style="color: rgba(34,211,238,0.5);">总人数 1233人</div>
+                                        </div>
+                                        <div class="rounded-lg p-3 text-center relative overflow-hidden" style="background: linear-gradient(135deg, rgba(8,25,50,0.8) 0%, rgba(6,18,40,0.9) 100%); border: 1px solid rgba(34,211,238,0.3); box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
+                                            <div class="absolute top-0 left-0 w-full h-0.5" style="background: linear-gradient(90deg, transparent, #22d3ee, transparent);"></div>
+                                            <div class="text-xs mb-1" style="color: rgba(34,211,238,0.8);">成绩合格率</div>
+                                            <div class="text-2xl font-bold" style="color: #fbbf24; text-shadow: 0 0 10px rgba(251,191,36,0.4);">69<span class="text-sm">%</span></div>
+                                        </div>
+                                        <div class="rounded-lg p-3 text-center relative overflow-hidden" style="background: linear-gradient(135deg, rgba(8,25,50,0.8) 0%, rgba(6,18,40,0.9) 100%); border: 1px solid rgba(34,211,238,0.3); box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
+                                            <div class="absolute top-0 left-0 w-full h-0.5" style="background: linear-gradient(90deg, transparent, #22d3ee, transparent);"></div>
+                                            <div class="text-xs mb-1" style="color: rgba(34,211,238,0.8);">成绩平均分</div>
+                                            <div class="text-2xl font-bold" style="color: #fbbf24; text-shadow: 0 0 10px rgba(251,191,36,0.4);">60<span class="text-sm">分</span></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 第二行：各年级测试人数 + 成绩合格率 -->
+                                    <div class="grid grid-cols-2 gap-3 flex-1">
+                                        <div class="rounded-lg p-3 relative overflow-hidden" style="background: linear-gradient(135deg, rgba(8,25,50,0.6) 0%, rgba(6,18,40,0.7) 100%); border: 1px solid rgba(34,211,238,0.2); box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);">
+                                            <div class="text-xs mb-2 text-center tracking-wider" style="color: rgba(34,211,238,0.9);">各年级测试人数</div>
+                                            <svg viewBox="0 0 300 180" class="w-full h-full">
+                                                <defs>
+                                                    <linearGradient id="blueGrad2" x1="0" y1="1" x2="0" y2="0">
+                                                        <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.8"/>
+                                                        <stop offset="100%" style="stop-color:#60a5fa;stop-opacity:1"/>
+                                                    </linearGradient>
+                                                </defs>
+                                                <g fill="rgba(255,255,255,0.03)">
+                                                    <line x1="30" y1="20" x2="280" y2="20"/><line x1="30" y1="60" x2="280" y2="60"/>
+                                                    <line x1="30" y1="100" x2="280" y2="100"/><line x1="30" y1="140" x2="280" y2="140"/>
+                                                </g>
+                                                <rect x="35" y="90" width="25" height="50" fill="url(#blueGrad2)" rx="2"/><text x="47" y="86" fill="#fff" font-size="8" text-anchor="middle" style="font-weight: bold;">95</text>
+                                                <rect x="80" y="80" width="25" height="60" fill="url(#blueGrad2)" rx="2"/><text x="92" y="76" fill="#fff" font-size="8" text-anchor="middle" style="font-weight: bold;">105</text>
+                                                <rect x="125" y="100" width="25" height="40" fill="url(#blueGrad2)" rx="2"/><text x="137" y="96" fill="#fff" font-size="8" text-anchor="middle" style="font-weight: bold;">82</text>
+                                                <rect x="170" y="85" width="25" height="55" fill="url(#blueGrad2)" rx="2"/><text x="182" y="81" fill="#fff" font-size="8" text-anchor="middle" style="font-weight: bold;">98</text>
+                                                <rect x="215" y="95" width="25" height="45" fill="url(#blueGrad2)" rx="2"/><text x="227" y="91" fill="#fff" font-size="8" text-anchor="middle" style="font-weight: bold;">153</text>
+                                                <text x="47" y="155" fill="rgba(255,255,255,0.6)" font-size="9" text-anchor="middle">一</text>
+                                                <text x="92" y="155" fill="rgba(255,255,255,0.6)" font-size="9" text-anchor="middle">二</text>
+                                                <text x="137" y="155" fill="rgba(255,255,255,0.6)" font-size="9" text-anchor="middle">三</text>
+                                                <text x="182" y="155" fill="rgba(255,255,255,0.6)" font-size="9" text-anchor="middle">四</text>
+                                                <text x="227" y="155" fill="rgba(255,255,255,0.6)" font-size="9" text-anchor="middle">五</text>
+                                                <text x="7" y="24" fill="rgba(34,211,238,0.7)" font-size="8">120</text>
+                                                <text x="7" y="64" fill="rgba(34,211,238,0.7)" font-size="8">80</text>
+                                                <text x="7" y="104" fill="rgba(34,211,238,0.7)" font-size="8">40</text>
+                                                <text x="7" y="144" fill="rgba(34,211,238,0.7)" font-size="8">0</text>
+                                            </svg>
+                                        </div>
+                                        <div class="rounded-lg p-3 relative overflow-hidden" style="background: linear-gradient(135deg, rgba(8,25,50,0.6) 0%, rgba(6,18,40,0.7) 100%); border: 1px solid rgba(34,211,238,0.2); box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);">
+                                            <div class="text-xs mb-2 text-center tracking-wider" style="color: rgba(34,211,238,0.9);">各年级成绩合格率</div>
+                                            <div class="space-y-2">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-[10px]" style="color: rgba(34,211,238,0.8); width: 35px;">一</span>
+                                                    <div class="flex-1 h-3 rounded-full overflow-hidden" style="background: rgba(255,255,255,0.05);">
+                                                        <div class="h-full rounded-full flex" style="width:72%;">
+                                                            <div style="width:35%; background: linear-gradient(90deg,#ec4899,#f472b6);"></div>
+                                                            <div style="width:25%; background: linear-gradient(90deg,#3b82f6,#60a5fa);"></div>
+                                                            <div style="width:12%; background: linear-gradient(90deg,#38bdf8,#7dd3fc);"></div>
+                                                        </div>
+                                                    </div>
+                                                    <span class="text-[10px] font-bold" style="color: #fbbf24;">72%</span>
+                                                </div>
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-[10px]" style="color: rgba(34,211,238,0.8); width: 35px;">二</span>
+                                                    <div class="flex-1 h-3 rounded-full overflow-hidden" style="background: rgba(255,255,255,0.05);">
+                                                        <div class="h-full rounded-full flex" style="width:68%;">
+                                                            <div style="width:30%; background: linear-gradient(90deg,#ec4899,#f472b6);"></div>
+                                                            <div style="width:22%; background: linear-gradient(90deg,#3b82f6,#60a5fa);"></div>
+                                                            <div style="width:16%; background: linear-gradient(90deg,#38bdf8,#7dd3fc);"></div>
+                                                        </div>
+                                                    </div>
+                                                    <span class="text-[10px] font-bold" style="color: #fbbf24;">68%</span>
+                                                </div>
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-[10px]" style="color: rgba(34,211,238,0.8); width: 35px;">三</span>
+                                                    <div class="flex-1 h-3 rounded-full overflow-hidden" style="background: rgba(255,255,255,0.05);">
+                                                        <div class="h-full rounded-full flex" style="width:75%;">
+                                                            <div style="width:38%; background: linear-gradient(90deg,#ec4899,#f472b6);"></div>
+                                                            <div style="width:24%; background: linear-gradient(90deg,#3b82f6,#60a5fa);"></div>
+                                                            <div style="width:13%; background: linear-gradient(90deg,#38bdf8,#7dd3fc);"></div>
+                                                        </div>
+                                                    </div>
+                                                    <span class="text-[10px] font-bold" style="color: #fbbf24;">75%</span>
+                                                </div>
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-[10px]" style="color: rgba(34,211,238,0.8); width: 35px;">四</span>
+                                                    <div class="flex-1 h-3 rounded-full overflow-hidden" style="background: rgba(255,255,255,0.05);">
+                                                        <div class="h-full rounded-full flex" style="width:70%;">
+                                                            <div style="width:32%; background: linear-gradient(90deg,#ec4899,#f472b6);"></div>
+                                                            <div style="width:26%; background: linear-gradient(90deg,#3b82f6,#60a5fa);"></div>
+                                                            <div style="width:12%; background: linear-gradient(90deg,#38bdf8,#7dd3fc);"></div>
+                                                        </div>
+                                                    </div>
+                                                    <span class="text-[10px] font-bold" style="color: #fbbf24;">70%</span>
+                                                </div>
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-[10px]" style="color: rgba(34,211,238,0.8); width: 35px;">五</span>
+                                                    <div class="flex-1 h-3 rounded-full overflow-hidden" style="background: rgba(255,255,255,0.05);">
+                                                        <div class="h-full rounded-full flex" style="width:65%;">
+                                                            <div style="width:28%; background: linear-gradient(90deg,#ec4899,#f472b6);"></div>
+                                                            <div style="width:20%; background: linear-gradient(90deg,#3b82f6,#60a5fa);"></div>
+                                                            <div style="width:17%; background: linear-gradient(90deg,#38bdf8,#7dd3fc);"></div>
+                                                        </div>
+                                                    </div>
+                                                    <span class="text-[10px] font-bold" style="color: #fbbf24;">65%</span>
+                                                </div>
+                                            </div>
+                                            <div class="flex justify-center gap-3 text-[9px] mt-2">
+                                                <span style="color: rgba(34,211,238,0.8);"><span class="inline-block w-2 h-2 rounded-sm mr-1" style="background: #ec4899;"></span>优秀</span>
+                                                <span style="color: rgba(34,211,238,0.8);"><span class="inline-block w-2 h-2 rounded-sm mr-1" style="background: #3b82f6;"></span>良好</span>
+                                                <span style="color: rgba(34,211,238,0.8);"><span class="inline-block w-2 h-2 rounded-sm mr-1" style="background: #38bdf8;"></span>合格</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 第三行：男女生各项目平均分与等级 -->
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div class="rounded-lg p-3 relative overflow-hidden" style="background: linear-gradient(135deg, rgba(8,25,50,0.6) 0%, rgba(6,18,40,0.7) 100%); border: 1px solid rgba(34,211,238,0.2);">
+                                            <div class="text-xs mb-2 text-center tracking-wider" style="color: rgba(34,211,238,0.9);">男生各项目平均分</div>
+                                            <div class="space-y-2">
+                                                <div class="flex items-center justify-between px-2 py-1.5 rounded" style="background: rgba(255,255,255,0.03);">
+                                                    <span class="text-[10px]" style="color: rgba(34,211,238,0.9);">50米跑</span>
+                                                    <span class="text-[11px] font-bold" style="color: #fbbf24;">82</span>
+                                                    <span class="px-2 py-0.5 text-[9px] rounded-full font-bold" style="background: rgba(34,197,94,0.2); color: #4ade80; border: 1px solid rgba(34,197,94,0.4);">优秀</span>
+                                                </div>
+                                                <div class="flex items-center justify-between px-2 py-1.5 rounded" style="background: rgba(255,255,255,0.03);">
+                                                    <span class="text-[10px]" style="color: rgba(34,211,238,0.9);">跳绳</span>
+                                                    <span class="text-[11px] font-bold" style="color: #fbbf24;">76</span>
+                                                    <span class="px-2 py-0.5 text-[9px] rounded-full font-bold" style="background: rgba(59,130,246,0.2); color: #60a5fa; border: 1px solid rgba(59,130,246,0.4);">良好</span>
+                                                </div>
+                                                <div class="flex items-center justify-between px-2 py-1.5 rounded" style="background: rgba(255,255,255,0.03);">
+                                                    <span class="text-[10px]" style="color: rgba(34,211,238,0.9);">坐位体前屈</span>
+                                                    <span class="text-[11px] font-bold" style="color: #fbbf24;">68</span>
+                                                    <span class="px-2 py-0.5 text-[9px] rounded-full font-bold" style="background: rgba(59,130,246,0.2); color: #60a5fa; border: 1px solid rgba(59,130,246,0.4);">良好</span>
+                                                </div>
+                                                <div class="flex items-center justify-between px-2 py-1.5 rounded" style="background: rgba(255,255,255,0.03);">
+                                                    <span class="text-[10px]" style="color: rgba(34,211,238,0.9);">肺活量</span>
+                                                    <span class="text-[11px] font-bold" style="color: #fbbf24;">58</span>
+                                                    <span class="px-2 py-0.5 text-[9px] rounded-full font-bold" style="background: rgba(251,191,36,0.2); color: #fbbf24; border: 1px solid rgba(251,191,36,0.4);">及格</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="rounded-lg p-3 relative overflow-hidden" style="background: linear-gradient(135deg, rgba(8,25,50,0.6) 0%, rgba(6,18,40,0.7) 100%); border: 1px solid rgba(34,211,238,0.2);">
+                                            <div class="text-xs mb-2 text-center tracking-wider" style="color: rgba(34,211,238,0.9);">女生各项目平均分</div>
+                                            <div class="space-y-2">
+                                                <div class="flex items-center justify-between px-2 py-1.5 rounded" style="background: rgba(255,255,255,0.03);">
+                                                    <span class="text-[10px]" style="color: rgba(34,211,238,0.9);">50米跑</span>
+                                                    <span class="text-[11px] font-bold" style="color: #fbbf24;">78</span>
+                                                    <span class="px-2 py-0.5 text-[9px] rounded-full font-bold" style="background: rgba(59,130,246,0.2); color: #60a5fa; border: 1px solid rgba(59,130,246,0.4);">良好</span>
+                                                </div>
+                                                <div class="flex items-center justify-between px-2 py-1.5 rounded" style="background: rgba(255,255,255,0.03);">
+                                                    <span class="text-[10px]" style="color: rgba(34,211,238,0.9);">跳绳</span>
+                                                    <span class="text-[11px] font-bold" style="color: #fbbf24;">85</span>
+                                                    <span class="px-2 py-0.5 text-[9px] rounded-full font-bold" style="background: rgba(34,197,94,0.2); color: #4ade80; border: 1px solid rgba(34,197,94,0.4);">优秀</span>
+                                                </div>
+                                                <div class="flex items-center justify-between px-2 py-1.5 rounded" style="background: rgba(255,255,255,0.03);">
+                                                    <span class="text-[10px]" style="color: rgba(34,211,238,0.9);">坐位体前屈</span>
+                                                    <span class="text-[11px] font-bold" style="color: #fbbf24;">72</span>
+                                                    <span class="px-2 py-0.5 text-[9px] rounded-full font-bold" style="background: rgba(59,130,246,0.2); color: #60a5fa; border: 1px solid rgba(59,130,246,0.4);">良好</span>
+                                                </div>
+                                                <div class="flex items-center justify-between px-2 py-1.5 rounded" style="background: rgba(255,255,255,0.03);">
+                                                    <span class="text-[10px]" style="color: rgba(34,211,238,0.9);">肺活量</span>
+                                                    <span class="text-[11px] font-bold" style="color: #fbbf24;">62</span>
+                                                    <span class="px-2 py-0.5 text-[9px] rounded-full font-bold" style="background: rgba(59,130,246,0.2); color: #60a5fa; border: 1px solid rgba(59,130,246,0.4);">良好</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 底部导航：首页 + 数据大屏 -->
+                            <div class="absolute bottom-3 left-5 flex items-center gap-3">
+                                <div class="w-14 h-14 rounded-full flex items-center justify-center text-cyan-300 text-xs font-bold relative" style="background: radial-gradient(circle, rgba(34,211,238,0.25) 0%, rgba(8,30,72,0.9) 70%); border: 2px solid rgba(34,211,238,0.7); box-shadow: 0 0 20px rgba(34,211,238,0.5), inset 0 0 10px rgba(34,211,238,0.2);">
+                                    首页
+                                </div>
+                                <div class="px-5 py-2 rounded-full text-cyan-100 text-xs font-medium" style="background: rgba(8,30,72,0.9); border: 1px solid rgba(34,211,238,0.6); box-shadow: 0 0 15px rgba(34,211,238,0.3);">数据大屏</div>
+                            </div>
+                        </div><div class="mt-6 grid grid-cols-3 gap-4 text-sm">
+                            <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                                <div class="flex items-center gap-2 text-green-700 font-medium mb-1">
+                                    <i data-lucide="activity" class="w-4 h-4"></i>
+                                    智慧体锻
+                                </div>
+                                <div class="text-xs text-green-600">运动人数 + 男女比例 + 各年级运动人数、人均时长、体能/休闲项目分布</div>
+                            </div>
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                <div class="flex items-center gap-2 text-blue-700 font-medium mb-1">
+                                    <i data-lucide="clipboard-check" class="w-4 h-4"></i>
+                                    智慧体测
+                                </div>
+                                <div class="text-xs text-blue-600">测试人数 + 合格率 + 平均分 + 各年级测试人数、合格率、男女生项目成绩</div>
+                            </div>
+                            <div class="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                                <div class="flex items-center gap-2 text-purple-700 font-medium mb-1">
+                                    <i data-lucide="monitor" class="w-4 h-4"></i>
+                                    深蓝科技大屏
+                                </div>
+                                <div class="text-xs text-purple-600">16:9比例深蓝渐变背景 + 霓虹青色高亮 + SVG手绘图表 + 网格装饰线</div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 text-center text-sm text-gray-500">
+                            <p>💡 校长在校园体育数据大屏可左右对比查看智慧体锻和智慧体测的全校统计数据，采用大屏深蓝科技风格</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 初始化 Lucide 图标
+        lucide.createIcons();
+
+        // Tab 切换功能
+        function switchPhoneTab(tab) {
+            // 隐藏所有内容
+            document.querySelectorAll('.demo-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // 移除所有Tab的active状态
+            document.querySelectorAll('.phone-tab').forEach(el => {
+                el.classList.remove('active');
+                el.classList.remove('border-blue-600', 'text-blue-600', 'bg-blue-50');
+                el.classList.add('border-transparent', 'text-gray-500');
+            });
+            
+            // 显示选中的内容
+            document.getElementById('pview-' + tab).classList.add('active');
+            
+            // 激活选中的Tab
+            const activeTab = document.getElementById('ptab-' + tab);
+            activeTab.classList.add('active');
+            activeTab.classList.remove('border-transparent', 'text-gray-500');
+            activeTab.classList.add('border-blue-600', 'text-blue-600', 'bg-blue-50');
+            
+            // 重新初始化图标
+            lucide.createIcons();
+        }
+        
+        // 显示学生详情 - 显示测试记录列表
+        function showStudentDetail(name, project, score, grade) {
+            // 更新学生姓名
+            document.getElementById('detailStudentName').textContent = name;
+            
+            // 显示测试记录页面
+            document.getElementById('studentDetailPage').classList.remove('hidden');
+            
+            // 重新初始化图标
+            setTimeout(() => lucide.createIcons(), 50);
+        }
+        
+        // 隐藏学生详情
+        function hideStudentDetail() {
+            document.getElementById('studentDetailPage').classList.add('hidden');
+        }
+        
+        // 显示测试报告详情
+        function showTestReportDetail(project, score, rating, grade) {
+            // 更新内容
+            document.getElementById('detailProject').textContent = project;
+            document.getElementById('detailScore').innerHTML = score + '<span class="text-sm">' + (project.includes('秒') ? '' : (project.includes('个') ? '个' : (project.includes('米') ? '米' : 'cm'))) + '</span>';
+            document.getElementById('detailGrade').textContent = grade;
+            
+            // 显示测试报告页面
+            document.getElementById('testReportDetailPage').classList.remove('hidden');
+            
+            // 重新初始化图标
+            setTimeout(() => lucide.createIcons(), 50);
+        }
+        
+        // 隐藏测试报告详情
+        function hideTestReportDetail() {
+            document.getElementById('testReportDetailPage').classList.add('hidden');
+        }
+        
+        // 显示成绩设置弹窗
+        function showScoreSetting() {
+            document.getElementById('scoreSettingModal').classList.remove('hidden');
+            setTimeout(() => lucide.createIcons(), 50);
+        }
+        
+        // 显示学生历史记录
+        function showStudentHistory() {
+            document.getElementById('studentHistoryModal').classList.remove('hidden');
+            setTimeout(() => lucide.createIcons(), 50);
+        }
+        
+        // 关闭弹窗
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+        
+        // 保存成绩状态
+        function saveScoreStatus() {
+            const status = document.getElementById('scoreStatusSelect').value;
+            const statusText = status === 'valid' ? '有效' : '无效';
+            alert('成绩已设置为：' + statusText);
+            closeModal('scoreSettingModal');
+        }
+        
+        // 显示历史测试报告
+        function showHistoryReport() {
+            alert('查看历史测试报告详情');
+            // TODO: 可以打开新的页面显示历史报告详情
+        }
+        
+        // 显示家校端测试报告详情
+        function showHomeTestReport(project, score, point, grade) {
+            document.getElementById('homeDetailProject').textContent = project;
+            // 处理成绩单位显示
+            let unit = '';
+            if (project.includes('跑') || project === '50米跑') unit = '秒';
+            else if (project === '跳绳' || project === '仰卧起坐') unit = '个';
+            else if (project === '坐位体前屈') unit = 'cm';
+            else if (project === '肺活量') unit = 'ml';
+            // 提取数字部分
+            const numMatch = score.match(/[\d.]+/);
+            const numPart = numMatch ? numMatch[0] : score;
+            document.getElementById('homeDetailScore').innerHTML = numPart + '<span class="text-sm">' + unit + '</span>';
+            document.getElementById('homeDetailPoint').textContent = point;
+            document.getElementById('homeDetailGrade').textContent = grade;
+            
+            document.getElementById('homeTestReportPage').classList.remove('hidden');
+            setTimeout(() => lucide.createIcons(), 50);
+        }
+        
+        // 隐藏家校端测试报告详情
+        function hideHomeTestReport() {
+            document.getElementById('homeTestReportPage').classList.add('hidden');
+        }
+
+        // 侧边栏导航高亮
+        document.addEventListener('DOMContentLoaded', () => {
+            const here = (location.pathname.split('/').pop() || '').toLowerCase();
+            document.querySelectorAll('aside nav a[href]').forEach(a => {
+                const h = (a.getAttribute('href') || '').toLowerCase();
+                if (h && h === here) a.addEventListener('click', e => e.preventDefault());
+            });
+        });
+    </script>
+</body>
+</html>
