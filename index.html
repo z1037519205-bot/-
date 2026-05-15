@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧体育管理系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div class="container mx-auto px-4 py-12 max-w-5xl">
+        <!-- 标题 -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">🏃 智慧体育管理系统</h1>
+            <p class="text-gray-600">Smart Sports Management System</p>
+        </div>
+
+        <!-- 功能入口卡片 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- 手机演示 -->
+            <a href="phone-demo.html" class="block bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group">
+                <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-2"></div>
+                <div class="p-6">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i data-lucide="smartphone" class="w-8 h-8 text-purple-600"></i>
+                        <h3 class="text-xl font-bold text-gray-800">手机演示</h3>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">包含智校端、家校端、校长数据大屏三个角色演示</p>
+                    <div class="flex items-center text-purple-600 text-sm font-medium group-hover:translate-x-2 transition-transform">
+                        进入演示 <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 智校端 -->
+            <a href="dashboard.html" class="block bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group">
+                <div class="bg-gradient-to-r from-blue-500 to-cyan-500 h-2"></div>
+                <div class="p-6">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i data-lucide="monitor" class="w-8 h-8 text-blue-600"></i>
+                        <h3 class="text-xl font-bold text-gray-800">智校端</h3>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">智慧体锻数据概览、班级管理、学生体测记录</p>
+                    <div class="flex items-center text-blue-600 text-sm font-medium group-hover:translate-x-2 transition-transform">
+                        进入系统 <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 体测记录 -->
+            <a href="records.html" class="block bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group">
+                <div class="bg-gradient-to-r from-green-500 to-emerald-500 h-2"></div>
+                <div class="p-6">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i data-lucide="clipboard-list" class="w-8 h-8 text-green-600"></i>
+                        <h3 class="text-xl font-bold text-gray-800">体测记录</h3>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">智慧体测学校概览、成绩分析、数据导出</p>
+                    <div class="flex items-center text-green-600 text-sm font-medium group-hover:translate-x-2 transition-transform">
+                        查看记录 <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 课堂管理 -->
+            <a href="classroom.html" class="block bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group">
+                <div class="bg-gradient-to-r from-orange-500 to-red-500 h-2"></div>
+                <div class="p-6">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i data-lucide="users" class="w-8 h-8 text-orange-600"></i>
+                        <h3 class="text-xl font-bold text-gray-800">课堂管理</h3>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">体育课班级管理、实时测试、成绩录入</p>
+                    <div class="flex items-center text-orange-600 text-sm font-medium group-hover:translate-x-2 transition-transform">
+                        管理课堂 <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 学生管理 -->
+            <a href="students.html" class="block bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group">
+                <div class="bg-gradient-to-r from-indigo-500 to-purple-500 h-2"></div>
+                <div class="p-6">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i data-lucide="user-check" class="w-8 h-8 text-indigo-600"></i>
+                        <h3 class="text-xl font-bold text-gray-800">学生管理</h3>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">学生档案、成绩查询、体测报告</p>
+                    <div class="flex items-center text-indigo-600 text-sm font-medium group-hover:translate-x-2 transition-transform">
+                        管理学生 <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 作业管理 -->
+            <a href="homework.html" class="block bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group">
+                <div class="bg-gradient-to-r from-teal-500 to-cyan-500 h-2"></div>
+                <div class="p-6">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i data-lucide="book-open" class="w-8 h-8 text-teal-600"></i>
+                        <h3 class="text-xl font-bold text-gray-800">作业管理</h3>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">体育作业布置、完成情况跟踪</p>
+                    <div class="flex items-center text-teal-600 text-sm font-medium group-hover:translate-x-2 transition-transform">
+                        查看作业 <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- 底部说明 -->
+        <div class="mt-12 text-center text-gray-600 text-sm">
+            <p>💡 提示：推荐使用最新版 Chrome、Edge 或 Safari 浏览器访问</p>
+            <p class="mt-2">如有问题，请联系管理员</p>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
