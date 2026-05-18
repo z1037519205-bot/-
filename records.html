@@ -296,38 +296,6 @@
                         </div>
                     </div>
 
-                    <!-- 第四行：身高体重BMI -->
-                    <div class="bg-white rounded-xl p-6 border border-gray-200">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="flex items-center gap-2">
-                                <i data-lucide="activity" class="w-5 h-5 text-blue-600"></i>
-                                <h3 class="text-base font-semibold text-gray-800">身高体重BMI</h3>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <button class="px-3 py-1 bg-blue-600 text-white rounded text-xs">全部</button>
-                                <button class="px-3 py-1 border border-gray-300 text-gray-600 rounded text-xs hover:bg-gray-50">男</button>
-                                <button class="px-3 py-1 border border-gray-300 text-gray-600 rounded text-xs hover:bg-gray-50">女</button>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <!-- 身高体重柱状图 -->
-                            <div id="chart-bmi-bar" style="height: 350px;"></div>
-                            <div class="flex flex-col justify-center">
-                                <div id="chart-bmi-pie" style="height: 300px;"></div>
-                                <div class="mt-2 flex items-center justify-center gap-4 text-xs text-gray-600">
-                                    <span><span class="w-2 h-2 inline-block rounded-full bg-blue-600 mr-1"></span>偏瘦</span>
-                                    <span><span class="w-2 h-2 inline-block rounded-full bg-sky-400 mr-1"></span>正常</span>
-                                    <span><span class="w-2 h-2 inline-block rounded-full bg-amber-400 mr-1"></span>过重</span>
-                                    <span><span class="w-2 h-2 inline-block rounded-full bg-orange-500 mr-1"></span>肥胖</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mt-2 flex items-center justify-center gap-6 text-xs text-gray-600">
-                            <span><span class="w-2 h-2 inline-block rounded-full bg-blue-600 mr-1"></span>身高</span>
-                            <span><span class="w-2 h-2 inline-block rounded-full bg-amber-400 mr-1"></span>体重</span>
-                        </div>
-                    </div>
-
                     <!-- 第五行：男生各项目平均分与等级 -->
                     <div class="bg-white rounded-xl p-6 border border-gray-200">
                         <div class="flex items-center justify-between mb-4">
@@ -1264,6 +1232,7 @@
                                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">性别</th>
                                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">学号</th>
                                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase" data-tip="字段：课程&#10;含义：测试所属课程信息&#10;来源：接口 sync-sport-result&#10;字段名：coursePeriod(第几节课), teacherName(体育老师)">课程</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">成绩状态</th>
                                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">操作</th>
                                     </tr>
                                 </thead>
@@ -1283,6 +1252,9 @@
                                                 <div class="text-gray-800 font-medium">第3节课</div>
                                                 <div class="text-gray-500 text-xs mt-0.5">张老师</div>
                                             </div>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">有效</span>
                                         </td>
                                         <td class="px-4 py-3 text-sm">
                                             <button onclick="showTestReport()" class="text-blue-600 hover:text-blue-700 mr-2">测试报告</button>
@@ -1310,6 +1282,9 @@
                                                 <div class="text-gray-500 text-xs mt-0.5">李老师</div>
                                             </div>
                                         </td>
+                                        <td class="px-4 py-3">
+                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">有效</span>
+                                        </td>
                                         <td class="px-4 py-3 text-sm">
                                             <button onclick="showTestReport()" class="text-blue-600 hover:text-blue-700 mr-2">测试报告</button>
                                             <button onclick="showVideo('何芯瑶', '双脚跳绳', '159个', '2026-05-14 17:05:00')" class="text-blue-600 hover:text-blue-700 mr-2 flex items-center gap-1">
@@ -1335,6 +1310,9 @@
                                                 <div class="text-gray-800 font-medium">第5节课</div>
                                                 <div class="text-gray-500 text-xs mt-0.5">王老师</div>
                                             </div>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">无效</span>
                                         </td>
                                         <td class="px-4 py-3 text-sm">
                                             <button onclick="showTestReport()" class="text-blue-600 hover:text-blue-700 mr-2">测试报告</button>
@@ -4198,44 +4176,6 @@
                     { name: '男生', type: 'bar', data: [60, 63, 61, 66, 64, 62, 58, 56, 54, 52, 50], itemStyle: { color: '#38bdf8' }, barWidth: '30%' },
                     { name: '女生', type: 'bar', data: [64, 67, 65, 70, 68, 66, 62, 60, 58, 56, 54], itemStyle: { color: '#f472b6' }, barWidth: '30%' }
                 ]
-            });
-
-            // 8. 身高体重双Y轴柱状图
-            const bmiBarChart = echarts.init(document.getElementById('chart-bmi-bar'));
-            bmiBarChart.setOption({
-                tooltip: { trigger: 'axis' },
-                legend: { data: ['身高', '体重'], bottom: 0, textStyle: { fontSize: 10 } },
-                grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
-                xAxis: {
-                    type: 'category',
-                    data: ['一年级', '二年级', '三年级', '四年级', '五年级', '六年级', '七年级', '八年级', '九年级'],
-                    axisLabel: { fontSize: 10 }
-                },
-                yAxis: [
-                    { type: 'value', name: '身高(CM)', position: 'left', min: 100, max: 180 },
-                    { type: 'value', name: '体重(KG)', position: 'right', min: 20, max: 80 }
-                ],
-                series: [
-                    { name: '身高', type: 'bar', data: [115, 120, 128, 135, 142, 150, 158, 163, 168], itemStyle: { color: '#2563eb' } },
-                    { name: '体重', type: 'bar', yAxisIndex: 1, data: [22, 25, 28, 32, 36, 42, 48, 52, 56], itemStyle: { color: '#f472b6' } }
-                ]
-            });
-
-            // 9. BMI分布环形图
-            const bmiPieChart = echarts.init(document.getElementById('chart-bmi-pie'));
-            bmiPieChart.setOption({
-                series: [{
-                    type: 'pie',
-                    radius: ['50%', '75%'],
-                    avoidLabelOverlap: false,
-                    label: { show: false },
-                    data: [
-                        { value: 15, name: '偏瘦', itemStyle: { color: '#38bdf8' } },
-                        { value: 65, name: '正常', itemStyle: { color: '#2563eb' } },
-                        { value: 12, name: '过重', itemStyle: { color: '#fcd34d' } },
-                        { value: 8, name: '肥胖', itemStyle: { color: '#f472b6' } }
-                    ]
-                }]
             });
 
             // 10. 男生各项目平均分与等级组合图

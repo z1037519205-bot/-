@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>体育成绩配置 - 智慧体育管理后台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Tab 样式 */
+        .tab-btn {
+            transition: all 0.2s;
+        }
+        .tab-btn.active {
+            border-bottom: 2px solid #3b82f6;
+            color: #3b82f6;
+            background: #eff6ff;
+        }
+        
+        /* 表格样式 */
+        .score-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            text-align: center;
+        }
+        .score-table td {
+            text-align: center;
+        }
+        .score-table tr:hover {
+            background: #f9fafb;
+        }
+        
+        /* 输入框样式 */
+        .score-input {
+            width: 60px;
+            text-align: center;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            padding: 4px;
+            font-size: 13px;
+        }
+        .score-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- 侧边栏导航 -->
+        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
+            <div class="p-6 border-b border-gray-200">
+                <h1 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                    <i data-lucide="activity" class="w-6 h-6 text-blue-600"></i>
+                    <span>智慧体育后台</span>
+                </h1>
+                <p class="text-xs text-gray-500 mt-1">实验中学</p>
+            </div>
+            <nav class="flex-1 min-h-0 overflow-y-auto p-4 space-y-1">
+                <div class="px-2 mb-2">
+                    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider">智慧体育</div>
+                </div>
+                <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition">
+                    <i data-lucide="activity" class="w-5 h-5"></i>
+                    <span>智慧体锻</span>
+                </a>
+                <a href="records.html" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition">
+                    <i data-lucide="clipboard-list" class="w-5 h-5"></i>
+                    <span>智慧体测</span>
+                </a>
+                <a href="phone-demo.html" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition">
+                    <i data-lucide="smartphone" class="w-5 h-5"></i>
+                    <span>手机演示</span>
+                </a>
+                <a href="score-config.html" class="flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-600 rounded-lg font-medium">
+                    <i data-lucide="settings" class="w-5 h-5"></i>
+                    <span>体育成绩配置</span>
+                </a>
+            </nav>
+            <div class="shrink-0 p-4 border-t border-gray-200">
+            </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="flex-1 overflow-y-auto">
+            <!-- 顶部Header -->
+            <header class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">体育成绩配置</h2>
+                    <p class="text-sm text-gray-500 mt-1">配置各项目的评分标准和等级划分</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="openAddModal()" class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span class="text-sm font-medium">新增评分标准</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- 内容区域 -->
+            <div class="p-8">
+                <!-- 评分标准列表 -->
+                <div class="bg-white rounded-xl border border-gray-200">
+                    <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-800">评分标准列表</h3>
+                        <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm text-gray-600">搜索项目</span>
+                                <input type="text" placeholder="输入项目名称" class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b border-gray-200">
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">标准名称</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">适用项目</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">适用年级</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">更新时间</th>
+                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">设为默认</th>
+                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <!-- 标准1 - 已启用 -->
+                                <tr class="hover:bg-gray-50 bg-blue-50">
+                                    <td class="px-6 py-4">
+                                        <div class="font-medium text-gray-900">国家学生体质健康评分标准</div>
+                                        <div class="text-xs text-gray-500 mt-1">2024版</div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex flex-wrap gap-1">
+                                            <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">跳绳</span>
+                                            <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">立定跳远</span>
+                                            <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">50米跑</span>
+                                            <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs">+8项</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="text-sm text-gray-600">1-6年级</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-gray-600">2024-12-15</td>
+                                    <td class="px-6 py-4 text-center">
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" checked class="sr-only peer" onchange="toggleDefault(this, '国家标准')">
+                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                            <span class="ml-2 text-xs text-gray-600">统计采用</span>
+                                        </label>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <button onclick="viewStandard('国家学生体质健康评分标准')" class="px-3 py-1 text-xs text-blue-600 hover:bg-blue-50 rounded">查看</button>
+                                            <button onclick="editStandard('国家学生体质健康评分标准')" class="px-3 py-1 text-xs text-gray-600 hover:bg-gray-50 rounded">编辑</button>
+                                            <button class="px-3 py-1 text-xs text-red-600 hover:bg-red-50 rounded">删除</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                                <!-- 标准2 -->
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4">
+                                        <div class="font-medium text-gray-900">校本体育评分标准</div>
+                                        <div class="text-xs text-gray-500 mt-1">2025版</div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex flex-wrap gap-1">
+                                            <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">仰卧起坐</span>
+                                            <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">坐位体前屈</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="text-sm text-gray-600">3-5年级</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-gray-600">2025-01-10</td>
+                                    <td class="px-6 py-4 text-center">
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" class="sr-only peer" onchange="toggleDefault(this, '校本标准')">
+                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                            <span class="ml-2 text-xs text-gray-600">统计采用</span>
+                                        </label>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <button onclick="viewStandard('校本体育评分标准')" class="px-3 py-1 text-xs text-blue-600 hover:bg-blue-50 rounded">查看</button>
+                                            <button onclick="editStandard('校本体育评分标准')" class="px-3 py-1 text-xs text-gray-600 hover:bg-gray-50 rounded">编辑</button>
+                                            <button class="px-3 py-1 text-xs text-red-600 hover:bg-red-50 rounded">删除</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 新增评分标准弹窗 -->
+    <div id="addModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="absolute inset-0 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4">
+                <div class="bg-white rounded-xl w-full max-w-7xl max-h-[90vh] overflow-hidden">
+                    <!-- 弹窗头部 -->
+                    <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
+                        <h3 class="text-lg font-semibold text-gray-800">新增评分标准</h3>
+                        <button onclick="closeAddModal()" class="text-gray-400 hover:text-gray-600">
+                            <i data-lucide="x" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- 弹窗内容 -->
+                    <div class="p-6 overflow-y-auto" style="max-height: calc(90vh - 140px);">
+                        <!-- 基本信息 -->
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div>
+                                <label class="block text-xs text-gray-600 mb-1">标准名称 <span class="text-red-500">*</span></label>
+                                <input type="text" id="addStandardName" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" placeholder="请输入评分标准名称">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-600 mb-1">设为默认</label>
+                                <label class="relative inline-flex items-center cursor-pointer mt-1">
+                                    <input type="checkbox" id="addDefault" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                    <span class="ml-2 text-xs text-gray-600">统计采用</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- 项目和年级配置 -->
+                        <div class="mb-6">
+                            <h4 class="text-sm font-semibold text-gray-700 mb-3">选择适用项目和年级</h4>
+                            <div class="space-y-3" id="projectGradeConfig">
+                                <!-- 项目配置行 - 由JavaScript动态生成 -->
+                            </div>
+                            <button onclick="addProjectGradeRow()" class="mt-3 flex items-center gap-1 px-3 py-1.5 bg-green-600 text-white rounded-lg text-xs hover:bg-green-700">
+                                <i data-lucide="plus" class="w-3 h-3"></i>
+                                添加项目
+                            </button>
+                        </div>
+                        
+                        <!-- 等级与评分配置（直接显示，不展开收起） -->
+                        <div class="mb-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <h4 class="text-sm font-semibold text-gray-700">等级与评分配置</h4>
+                                <button onclick="addGradeRowInAdd()" class="flex items-center gap-1 px-3 py-1.5 bg-green-600 text-white rounded-lg text-xs hover:bg-green-700">
+                                    <i data-lucide="plus" class="w-3 h-3"></i>
+                                    新增等级
+                                </button>
+                            </div>
+                            
+                            <!-- 项目切换Tab -->
+                            <div class="mb-4 border-b border-gray-200">
+                                <div class="flex gap-2 overflow-x-auto pb-2" id="projectTabs">
+                                    <div class="text-sm text-gray-500">请先添加项目</div>
+                                </div>
+                            </div>
+                            
+                            <!-- 性别切换 -->
+                            <div class="mb-4 flex gap-4">
+                                <button class="gender-tab-btn px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium" onclick="switchGenderInAdd(this, 'male')">男生评分标准</button>
+                                <button class="gender-tab-btn px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200" onclick="switchGenderInAdd(this, 'female')">女生评分标准</button>
+                            </div>
+                            
+                            <!-- 评分标准表格 -->
+                            <div class="overflow-x-auto">
+                                <table class="score-table w-full border border-gray-200" id="addScoreTable">
+                                    <thead>
+                                        <tr class="border-b border-gray-200">
+                                            <th class="px-4 py-3 text-xs text-gray-600">等级</th>
+                                            <th class="px-4 py-3 text-xs text-gray-600">评分</th>
+                                            <th class="px-4 py-3 text-xs text-gray-600">一年级</th>
+                                            <th class="px-4 py-3 text-xs text-gray-600">二年级</th>
+                                            <th class="px-4 py-3 text-xs text-gray-600">三年级</th>
+                                            <th class="px-4 py-3 text-xs text-gray-600">四年级</th>
+                                            <th class="px-4 py-3 text-xs text-gray-600">五年级</th>
+                                            <th class="px-4 py-3 text-xs text-gray-600">六年级</th>
+                                            <th class="px-4 py-3 text-xs text-gray-600 w-20">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="addScoreTableBody">
+                                        <!-- 默认等级行 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- 提示 -->
+                        <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                            <div class="text-sm text-blue-800">
+                                <div class="font-medium mb-1">📝 配置说明</div>
+                                <ul class="list-disc list-inside space-y-1 text-xs">
+                                    <li>可以为每个项目配置不同的年级范围</li>
+                                    <li>创建后可以详细配置每个项目的评分表格</li>
+                                    <li>每个项目支持为男生和女生分别配置不同的评分标准</li>
+                                    <li>等级和评分列可以自由增删改</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 弹窗底部按钮 -->
+                    <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-3 sticky bottom-0 bg-white">
+                        <button onclick="closeAddModal()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200">取消</button>
+                        <button onclick="submitNewStandard()" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">创建评分标准</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 查看详情弹窗 -->
+    <div id="detailModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="absolute inset-0 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4">
+                <div class="bg-white rounded-xl w-full max-w-7xl max-h-[90vh] overflow-hidden">
+                    <!-- 弹窗头部 -->
+                    <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
+                        <h3 class="text-lg font-semibold text-gray-800" id="modalTitle">国家学生体质健康评分标准</h3>
+                        <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                            <i data-lucide="x" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- 弹窗内容 -->
+                    <div class="p-6 overflow-y-auto" style="max-height: calc(90vh - 140px);">
+                        <!-- 项目Tab切换 -->
+                        <div class="mb-6 border-b border-gray-200">
+                            <div class="flex gap-2 overflow-x-auto pb-2">
+                                <button class="tab-btn active px-4 py-2 text-sm font-medium whitespace-nowrap" onclick="switchProjectTab(this, 'jump')">
+                                    <span>跳绳</span>
+                                    <span class="ml-1 text-xs text-gray-500">(次)</span>
+                                </button>
+                                <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" onclick="switchProjectTab(this, 'longjump')">
+                                    <span>立定跳远</span>
+                                    <span class="ml-1 text-xs text-gray-500">(cm)</span>
+                                </button>
+                                <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" onclick="switchProjectTab(this, 'situp')">
+                                    <span>仰卧起坐</span>
+                                    <span class="ml-1 text-xs text-gray-500">(个)</span>
+                                </button>
+                                <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" onclick="switchProjectTab(this, 'pullup')">
+                                    <span>引体向上</span>
+                                    <span class="ml-1 text-xs text-gray-500">(个)</span>
+                                </button>
+                                <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" onclick="switchProjectTab(this, 'flexibility')">
+                                    <span>坐位体前屈</span>
+                                    <span class="ml-1 text-xs text-gray-500">(cm)</span>
+                                </button>
+                                <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" onclick="switchProjectTab(this, 'sprint50')">
+                                    <span>50米跑</span>
+                                    <span class="ml-1 text-xs text-gray-500">(秒)</span>
+                                </button>
+                                <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" onclick="switchProjectTab(this, 'sprint50x8')">
+                                    <span>50x8往返跑</span>
+                                    <span class="ml-1 text-xs text-gray-500">(秒)</span>
+                                </button>
+                                <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" onclick="switchProjectTab(this, 'run800')">
+                                    <span>800米跑</span>
+                                    <span class="ml-1 text-xs text-gray-500">(秒)</span>
+                                </button>
+                                <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" onclick="switchProjectTab(this, 'run1000')">
+                                    <span>1000米跑</span>
+                                    <span class="ml-1 text-xs text-gray-500">(秒)</span>
+                                </button>
+                                <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-500 whitespace-nowrap" onclick="switchProjectTab(this, 'lung')">
+                                    <span>肺活量</span>
+                                    <span class="ml-1 text-xs text-gray-500">(ml)</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- 项目配置区 -->
+                        <div class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                            <div class="flex items-center justify-between mb-3">
+                                <h4 class="text-sm font-semibold text-gray-700">项目配置</h4>
+                                <button onclick="toggleProjectConfig()" class="text-xs text-blue-600 hover:text-blue-700">
+                                    <i data-lucide="chevron-down" class="w-4 h-4 inline"></i>
+                                    展开/收起
+                                </button>
+                            </div>
+                            <div id="projectConfig" class="grid grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-xs text-gray-600 mb-1">项目名称</label>
+                                    <input type="text" value="跳绳" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-600 mb-1">项目单位</label>
+                                    <select class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                                        <option value="次" selected>次（次数）</option>
+                                        <option value="cm">cm（厘米）</option>
+                                        <option value="秒">秒（时间）</option>
+                                        <option value="ml">ml（毫升）</option>
+                                        <option value="个">个（个数）</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-600 mb-1">成绩排序规则</label>
+                                    <select class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                                        <option value="desc" selected>数值越大越优秀</option>
+                                        <option value="asc">数值越小越优秀</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 性别切换 -->
+                        <div class="mb-4 flex gap-4">
+                            <button class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium">男生评分标准</button>
+                            <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200">女生评分标准</button>
+                        </div>
+                        
+                        <!-- 评分标准表格 -->
+                        <div class="mb-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <h4 class="text-sm font-semibold text-gray-700">等级与评分配置</h4>
+                                <button onclick="addGradeRow()" class="flex items-center gap-1 px-3 py-1.5 bg-green-600 text-white rounded-lg text-xs hover:bg-green-700">
+                                    <i data-lucide="plus" class="w-3 h-3"></i>
+                                    新增等级
+                                </button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="score-table w-full border border-gray-200" id="scoreTable">
+                                <thead>
+                                    <tr class="border-b border-gray-200">
+                                        <th class="px-4 py-3 text-xs text-gray-600">等级</th>
+                                        <th class="px-4 py-3 text-xs text-gray-600">评分</th>
+                                        <th class="px-4 py-3 text-xs text-gray-600">一年级</th>
+                                        <th class="px-4 py-3 text-xs text-gray-600">二年级</th>
+                                        <th class="px-4 py-3 text-xs text-gray-600">三年级</th>
+                                        <th class="px-4 py-3 text-xs text-gray-600">四年级</th>
+                                        <th class="px-4 py-3 text-xs text-gray-600">五年级</th>
+                                        <th class="px-4 py-3 text-xs text-gray-600">六年级</th>
+                                        <th class="px-4 py-3 text-xs text-gray-600 w-20">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="scoreTableBody">
+                                    <tr class="border-b border-gray-200" data-grade="1">
+                                        <td class="px-4 py-2"><input type="text" class="grade-input w-20 px-2 py-1 border border-gray-300 rounded text-sm text-center" value="优秀"></td>
+                                        <td class="px-4 py-2"><input type="number" class="score-value-input w-16 px-2 py-1 border border-gray-300 rounded text-sm text-center font-medium" value="100"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="109"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="117"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="126"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="137"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="148"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="157"></td>
+                                        <td class="px-4 py-2 text-center">
+                                            <button onclick="editGradeRow(this)" class="px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 rounded mr-1" title="编辑">
+                                                <i data-lucide="edit-2" class="w-3 h-3 inline"></i>
+                                            </button>
+                                            <button onclick="deleteGradeRow(this)" class="px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded" title="删除">
+                                                <i data-lucide="trash-2" class="w-3 h-3 inline"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200" data-grade="2">
+                                        <td class="px-4 py-2"><input type="text" class="grade-input w-20 px-2 py-1 border border-gray-300 rounded text-sm text-center" value="优秀"></td>
+                                        <td class="px-4 py-2"><input type="number" class="score-value-input w-16 px-2 py-1 border border-gray-300 rounded text-sm text-center font-medium" value="95"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="104"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="112"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="121"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="132"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="143"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="152"></td>
+                                        <td class="px-4 py-2 text-center">
+                                            <button onclick="editGradeRow(this)" class="px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 rounded mr-1" title="编辑">
+                                                <i data-lucide="edit-2" class="w-3 h-3 inline"></i>
+                                            </button>
+                                            <button onclick="deleteGradeRow(this)" class="px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded" title="删除">
+                                                <i data-lucide="trash-2" class="w-3 h-3 inline"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200">
+                                        <td class="px-4 py-2 text-sm text-gray-700">优秀</td>
+                                        <td class="px-4 py-2 text-sm font-medium text-gray-900">90</td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="99"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="107"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="116"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="127"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="138"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="147"></td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200">
+                                        <td class="px-4 py-2 text-sm text-gray-700">良好</td>
+                                        <td class="px-4 py-2 text-sm font-medium text-gray-900">85</td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="93"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="101"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="110"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="121"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="132"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="141"></td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200">
+                                        <td class="px-4 py-2 text-sm text-gray-700">良好</td>
+                                        <td class="px-4 py-2 text-sm font-medium text-gray-900">80</td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="87"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="95"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="104"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="115"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="126"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="135"></td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200">
+                                        <td class="px-4 py-2 text-sm text-gray-700">及格</td>
+                                        <td class="px-4 py-2 text-sm font-medium text-gray-900">78</td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="80"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="88"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="97"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="108"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="119"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="128"></td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200">
+                                        <td class="px-4 py-2 text-sm text-gray-700">及格</td>
+                                        <td class="px-4 py-2 text-sm font-medium text-gray-900">60</td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="17"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="25"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="34"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="45"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="56"></td>
+                                        <td class="px-4 py-2"><input type="text" class="score-input" value="65"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- 说明 -->
+                        <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                            <div class="text-sm text-blue-800">
+                                <div class="font-medium mb-2">💡 配置说明：</div>
+                                <ul class="list-disc list-inside space-y-1 text-xs">
+                                    <li><strong>等级和评分列可编辑</strong>：点击等级名称或评分分数即可编辑</li>
+                                    <li><strong>新增等级</strong>：点击“新增等级”按钮添加新的等级行</li>
+                                    <li><strong>删除等级</strong>：点击每行右侧的删除按钮</li>
+                                    <li>每个项目可以为不同性别、不同年级配置不同的评分标准</li>
+                                    <li>数值越大越优秀的项目（如跳绳、跳远），输入达标次数/距离</li>
+                                    <li>数值越小越优秀的项目（如跑步），输入达标时间（秒）</li>
+                                    <li>支持导入Excel批量配置评分标准</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 弹窗底部 -->
+                    <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-3">
+                        <button onclick="closeModal()" class="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50">关闭</button>
+                        <button class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">保存修改</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化 lucide icons
+        lucide.createIcons();
+        
+        // 打开详情弹窗
+        function viewStandard(name) {
+            document.getElementById('modalTitle').textContent = name;
+            document.getElementById('detailModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            lucide.createIcons();
+        }
+        
+        // 关闭弹窗
+        function closeModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+        
+        // 切换项目Tab
+        function switchProjectTab(btn, project) {
+            // 移除所有active
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.remove('active');
+                b.classList.add('text-gray-500');
+            });
+            // 添加active
+            btn.classList.add('active');
+            btn.classList.remove('text-gray-500');
+            
+            // TODO: 根据项目加载对应的评分标准数据
+            console.log('切换项目:', project);
+        }
+        
+        // 展开/收起项目配置
+        function toggleProjectConfig() {
+            const config = document.getElementById('projectConfig');
+            if (config.style.display === 'none') {
+                config.style.display = 'grid';
+            } else {
+                config.style.display = 'none';
+            }
+        }
+        
+        // 切换默认评分标准
+        function toggleDefault(checkbox, name) {
+            if (checkbox.checked) {
+                // 取消其他标准的默认状态
+                document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                    if (cb !== checkbox) {
+                        cb.checked = false;
+                    }
+                });
+                // 高亮当前行
+                checkbox.closest('tr').classList.add('bg-blue-50');
+                document.querySelectorAll('tbody tr').forEach(tr => {
+                    if (tr !== checkbox.closest('tr')) {
+                        tr.classList.remove('bg-blue-50');
+                    }
+                });
+                alert(`已设置【${name}】为统计采用的评分标准`);
+            }
+        }
+        
+        // 编辑评分标准
+        function editStandard(name) {
+            viewStandard(name);
+            // TODO: 进入编辑模式
+        }
+        
+        // 新增评分标准
+        function openAddModal() {
+            document.getElementById('addModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            lucide.createIcons();
+            
+            // 清空表单
+            document.getElementById('addStandardName').value = '';
+            document.getElementById('addDefault').checked = false;
+            
+            // 清空项目配置
+            document.getElementById('projectGradeConfig').innerHTML = '';
+            
+            // 默认添加一个项目配置行
+            addProjectGradeRow();
+            
+            // 清空并初始化等级表格
+            document.getElementById('addScoreTableBody').innerHTML = '';
+            defaultGradesInAdd.forEach(gradeData => {
+                addGradeRowInAdd(gradeData);
+            });
+        }
+        
+        // 关闭新增弹窗
+        function closeAddModal() {
+            document.getElementById('addModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+        
+        // 添加项目年级配置行
+        function addProjectGradeRow() {
+            const container = document.getElementById('projectGradeConfig');
+            const rowCount = container.children.length + 1;
+            
+            const row = document.createElement('div');
+            row.className = 'flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200';
+            row.innerHTML = `
+                <div class="flex-1">
+                    <label class="block text-xs text-gray-600 mb-1">项目 ${rowCount}</label>
+                    <select class="project-select w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" onchange="onProjectChange()">
+                        <option value="">请选择项目</option>
+                        <option value="jump">跳绳</option>
+                        <option value="longjump">立定跳远</option>
+                        <option value="situp">仰卧起坐</option>
+                        <option value="pullup">引体向上</option>
+                        <option value="flexibility">坐位体前屈</option>
+                        <option value="sprint50">50米跑</option>
+                        <option value="sprint50x8">50米×8往返跑</option>
+                        <option value="run1000">1000米跑(男)</option>
+                        <option value="run800">800米跑(女)</option>
+                        <option value="lung">肺活量</option>
+                    </select>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div>
+                        <label class="block text-xs text-gray-600 mb-1">起始年级</label>
+                        <select class="start-grade-select px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            <option value="1">一年级</option>
+                            <option value="2">二年级</option>
+                            <option value="3" selected>三年级</option>
+                            <option value="4">四年级</option>
+                            <option value="5">五年级</option>
+                            <option value="6">六年级</option>
+                        </select>
+                    </div>
+                    <span class="text-gray-500 mt-5">至</span>
+                    <div>
+                        <label class="block text-xs text-gray-600 mb-1">结束年级</label>
+                        <select class="end-grade-select px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            <option value="1">一年级</option>
+                            <option value="2">二年级</option>
+                            <option value="3">三年级</option>
+                            <option value="4">四年级</option>
+                            <option value="5">五年级</option>
+                            <option value="6" selected>六年级</option>
+                        </select>
+                    </div>
+                </div>
+                <button onclick="removeProjectGradeRow(this)" class="mt-5 px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded" title="删除">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+            `;
+            
+            container.appendChild(row);
+            lucide.createIcons();
+        }
+        
+        // 删除项目年级配置行
+        function removeProjectGradeRow(btn) {
+            const container = document.getElementById('projectGradeConfig');
+            if (container.children.length > 1) {
+                btn.closest('.flex.items-center.gap-3').remove();
+            } else {
+                alert('至少需要保留一个项目配置');
+            }
+        }
+        
+        // 新增弹窗中的默认等级数据
+        const defaultGradesInAdd = [
+            { grade: '优秀', score: 100, grades: [109, 117, 126, 137, 148, 157] },
+            { grade: '优秀', score: 95, grades: [104, 112, 121, 132, 143, 152] },
+            { grade: '优秀', score: 90, grades: [99, 107, 116, 127, 138, 147] },
+            { grade: '良好', score: 85, grades: [93, 101, 110, 121, 132, 141] },
+            { grade: '良好', score: 80, grades: [87, 95, 104, 115, 126, 135] },
+            { grade: '及格', score: 78, grades: [80, 88, 97, 108, 119, 128] },
+            { grade: '及格', score: 60, grades: [60, 68, 77, 88, 99, 108] },
+            { grade: '不及格', score: 0, grades: [0, 0, 0, 0, 0, 0] }
+        ];
+        
+        // 存储每个项目的评分数据
+        let projectScoreData = {};
+        let currentProject = null;
+        let currentGender = 'male';
+        
+        // 项目选择变化时的处理
+        function onProjectChange() {
+            updateProjectTabs();
+            
+            // 如果有已选择的项目，自动切换到第一个
+            const selects = document.querySelectorAll('.project-select');
+            const projects = Array.from(selects).map(s => s.value).filter(v => v);
+            
+            if (projects.length > 0 && !currentProject) {
+                switchProjectTab(projects[0]);
+            }
+        }
+        
+        // 更新项目Tab
+        function updateProjectTabs() {
+            const container = document.getElementById('projectTabs');
+            const selects = document.querySelectorAll('.project-select');
+            const projects = [];
+            
+            selects.forEach(select => {
+                if (select.value) {
+                    const text = select.options[select.selectedIndex].text;
+                    projects.push({ value: select.value, text });
+                }
+            });
+            
+            if (projects.length === 0) {
+                container.innerHTML = '<div class="text-sm text-gray-500">请先添加项目</div>';
+                return;
+            }
+            
+            container.innerHTML = projects.map(p => `
+                <button class="project-tab-btn px-4 py-2 text-sm font-medium whitespace-nowrap ${currentProject === p.value ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}" 
+                        onclick="switchProjectTab('${p.value}')">
+                    ${p.text}
+                </button>
+            `).join('');
+        }
+        
+        // 切换项目Tab
+        function switchProjectTab(projectValue) {
+            // 保存当前项目的数据
+            if (currentProject) {
+                saveCurrentProjectData();
+            }
+            
+            currentProject = projectValue;
+            
+            // 更新Tab样式
+            document.querySelectorAll('.project-tab-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white');
+                btn.classList.add('bg-gray-100', 'text-gray-700');
+            });
+            event.target.classList.remove('bg-gray-100', 'text-gray-700');
+            event.target.classList.add('bg-blue-600', 'text-white');
+            
+            // 加载该项目的数据
+            loadProjectData(projectValue);
+        }
+        
+        // 保存当前项目的评分数据
+        function saveCurrentProjectData() {
+            if (!currentProject) return;
+            
+            const rows = document.querySelectorAll('#addScoreTableBody tr');
+            const grades = [];
+            
+            rows.forEach(row => {
+                const grade = row.querySelector('.grade-input').value;
+                const score = row.querySelector('.score-value-input').value;
+                const gradeValues = [];
+                row.querySelectorAll('.score-input').forEach(input => {
+                    gradeValues.push(input.value);
+                });
+                
+                grades.push({ grade, score, grades: gradeValues });
+            });
+            
+            if (!projectScoreData[currentProject]) {
+                projectScoreData[currentProject] = {};
+            }
+            projectScoreData[currentProject][currentGender] = grades;
+        }
+        
+        // 加载项目的评分数据
+        function loadProjectData(projectValue) {
+            const tbody = document.getElementById('addScoreTableBody');
+            tbody.innerHTML = '';
+            
+            // 检查是否有该项目的数据
+            if (projectScoreData[projectValue] && projectScoreData[projectValue][currentGender]) {
+                // 加载已保存的数据
+                projectScoreData[projectValue][currentGender].forEach(gradeData => {
+                    addGradeRowInAdd(gradeData);
+                });
+            } else {
+                // 加载默认数据
+                defaultGradesInAdd.forEach(gradeData => {
+                    addGradeRowInAdd(gradeData);
+                });
+            }
+        }
+        
+        // 在新增弹窗中添加等级行
+        function addGradeRowInAdd(gradeData = null) {
+            const tbody = document.getElementById('addScoreTableBody');
+            const rowCount = tbody.querySelectorAll('tr').length + 1;
+            
+            const data = gradeData || {
+                grade: `等级${rowCount}`,
+                score: 100 - (rowCount - 1) * 5,
+                grades: [0, 0, 0, 0, 0, 0]
+            };
+            
+            const newRow = document.createElement('tr');
+            newRow.className = 'border-b border-gray-200';
+            newRow.setAttribute('data-grade', rowCount);
+            newRow.innerHTML = `
+                <td class="px-4 py-2"><input type="text" class="grade-input w-20 px-2 py-1 border border-gray-300 rounded text-sm text-center" value="${data.grade}"></td>
+                <td class="px-4 py-2"><input type="number" class="score-value-input w-16 px-2 py-1 border border-gray-300 rounded text-sm text-center font-medium" value="${data.score}"></td>
+                <td class="px-4 py-2"><input type="text" class="score-input" value="${data.grades[0]}"></td>
+                <td class="px-4 py-2"><input type="text" class="score-input" value="${data.grades[1]}"></td>
+                <td class="px-4 py-2"><input type="text" class="score-input" value="${data.grades[2]}"></td>
+                <td class="px-4 py-2"><input type="text" class="score-input" value="${data.grades[3]}"></td>
+                <td class="px-4 py-2"><input type="text" class="score-input" value="${data.grades[4]}"></td>
+                <td class="px-4 py-2"><input type="text" class="score-input" value="${data.grades[5]}"></td>
+                <td class="px-4 py-2 text-center">
+                    <button onclick="editGradeRowInAdd(this)" class="px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 rounded mr-1" title="编辑">
+                        <i data-lucide="edit-2" class="w-3 h-3 inline"></i>
+                    </button>
+                    <button onclick="deleteGradeRowInAdd(this)" class="px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded" title="删除">
+                        <i data-lucide="trash-2" class="w-3 h-3 inline"></i>
+                    </button>
+                </td>
+            `;
+            
+            tbody.appendChild(newRow);
+            lucide.createIcons();
+        }
+        
+        // 删除新增弹窗中的等级行
+        function deleteGradeRowInAdd(btn) {
+            const row = btn.closest('tr');
+            const gradeName = row.querySelector('.grade-input').value;
+            const scoreValue = row.querySelector('.score-value-input').value;
+            
+            if (confirm(`确认删除等级【${gradeName}】（评分：${scoreValue}）吗？`)) {
+                row.remove();
+            }
+        }
+        
+        // 编辑新增弹窗中的等级行
+        function editGradeRowInAdd(btn) {
+            const row = btn.closest('tr');
+            const gradeInput = row.querySelector('.grade-input');
+            const scoreInput = row.querySelector('.score-value-input');
+            
+            // 切换禁用状态
+            const isDisabled = gradeInput.disabled;
+            gradeInput.disabled = !isDisabled;
+            scoreInput.disabled = !isDisabled;
+            
+            if (!isDisabled) {
+                // 进入编辑模式
+                gradeInput.focus();
+                gradeInput.select();
+                btn.innerHTML = '<i data-lucide="check" class="w-3 h-3 inline"></i>';
+                btn.classList.remove('text-blue-600', 'hover:bg-blue-50');
+                btn.classList.add('text-green-600', 'hover:bg-green-50');
+            } else {
+                // 退出编辑模式
+                btn.innerHTML = '<i data-lucide="edit-2" class="w-3 h-3 inline"></i>';
+                btn.classList.remove('text-green-600', 'hover:bg-green-50');
+                btn.classList.add('text-blue-600', 'hover:bg-blue-50');
+            }
+            
+            lucide.createIcons();
+        }
+        
+        // 切换新增弹窗中的性别Tab
+        function switchGenderInAdd(btn, gender) {
+            // 保存当前数据
+            saveCurrentProjectData();
+            
+            currentGender = gender;
+            
+            // 更新按钮样式
+            document.querySelectorAll('.gender-tab-btn').forEach(b => {
+                b.classList.remove('bg-blue-600', 'text-white');
+                b.classList.add('bg-gray-100', 'text-gray-700');
+            });
+            btn.classList.remove('bg-gray-100', 'text-gray-700');
+            btn.classList.add('bg-blue-600', 'text-white');
+            
+            // 加载对应性别的数据
+            if (currentProject) {
+                loadProjectData(currentProject);
+            }
+        }
+        
+        // 提交新增评分标准
+        function submitNewStandard() {
+            // 获取表单数据
+            const name = document.getElementById('addStandardName').value.trim();
+            const isDefault = document.getElementById('addDefault').checked;
+            
+            // 验证基本信息
+            if (!name) {
+                alert('请输入标准名称');
+                return;
+            }
+            
+            // 获取所有项目配置
+            const rows = document.querySelectorAll('#projectGradeConfig > div');
+            const projectConfigs = [];
+            const selectedProjects = [];
+            
+            for (let row of rows) {
+                const project = row.querySelector('.project-select').value;
+                const startGrade = row.querySelector('.start-grade-select').value;
+                const endGrade = row.querySelector('.end-grade-select').value;
+                
+                if (!project) {
+                    alert('请选择所有项目');
+                    return;
+                }
+                
+                if (parseInt(startGrade) > parseInt(endGrade)) {
+                    alert('起始年级不能大于结束年级');
+                    return;
+                }
+                
+                const projectText = row.querySelector('.project-select option:checked').text;
+                projectConfigs.push({ project, projectText, startGrade, endGrade });
+                selectedProjects.push(projectText);
+            }
+            
+            if (projectConfigs.length === 0) {
+                alert('请至少添加一个项目配置');
+                return;
+            }
+            
+            // 如果设为默认，取消其他标准的默认状态
+            if (isDefault) {
+                document.querySelectorAll('tbody input[type="checkbox"]').forEach(cb => {
+                    cb.checked = false;
+                    cb.closest('tr').classList.remove('bg-blue-50');
+                });
+            }
+            
+            // 获取今天日期
+            const today = new Date().toISOString().split('T')[0];
+            
+            // 合并年级范围
+            const allStartGrades = projectConfigs.map(c => parseInt(c.startGrade));
+            const allEndGrades = projectConfigs.map(c => parseInt(c.endGrade));
+            const minGrade = Math.min(...allStartGrades);
+            const maxGrade = Math.max(...allEndGrades);
+            const gradeRange = `${minGrade}-${maxGrade}年级`;
+            
+            // 添加新行到表格
+            const tbody = document.querySelector('tbody');
+            const newRow = document.createElement('tr');
+            newRow.className = 'hover:bg-gray-50' + (isDefault ? ' bg-blue-50' : '');
+            newRow.innerHTML = `
+                <td class="px-6 py-4">
+                    <div class="font-medium text-gray-900">${name}</div>
+                </td>
+                <td class="px-6 py-4">
+                    <div class="flex flex-wrap gap-1">
+                        ${selectedProjects.map(p => `<span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">${p}</span>`).join('')}
+                    </div>
+                </td>
+                <td class="px-6 py-4">
+                    <span class="text-sm text-gray-600">${gradeRange}</span>
+                </td>
+                <td class="px-6 py-4 text-sm text-gray-600">${today}</td>
+                <td class="px-6 py-4 text-center">
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" ${isDefault ? 'checked' : ''} class="sr-only peer" onchange="toggleDefault(this, '${name}')">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        <span class="ml-2 text-xs text-gray-600">统计采用</span>
+                    </label>
+                </td>
+                <td class="px-6 py-4">
+                    <div class="flex items-center justify-center gap-2">
+                        <button onclick="viewStandard('${name}')" class="px-3 py-1 text-xs text-blue-600 hover:bg-blue-50 rounded">查看</button>
+                        <button onclick="editStandard('${name}')" class="px-3 py-1 text-xs text-gray-600 hover:bg-gray-50 rounded">编辑</button>
+                        <button onclick="deleteStandard(this)" class="px-3 py-1 text-xs text-red-600 hover:bg-red-50 rounded">删除</button>
+                    </div>
+                </td>
+            `;
+            
+            tbody.insertBefore(newRow, tbody.firstChild); // 插入到最前面
+            
+            // 关闭弹窗
+            closeAddModal();
+            
+            // 显示成功提示
+            alert(`评分标准【${name}】创建成功！`);
+        }
+        
+        // 删除评分标准
+        function deleteStandard(btn) {
+            const row = btn.closest('tr');
+            const name = row.querySelector('.font-medium').textContent;
+            
+            if (confirm(`确认删除评分标准【${name}】吗？`)) {
+                row.remove();
+            }
+        }
+        
+        // 新增等级行
+        function addGradeRow() {
+            const tbody = document.getElementById('scoreTableBody');
+            const rowCount = tbody.querySelectorAll('tr').length + 1;
+            
+            const newRow = document.createElement('tr');
+            newRow.className = 'border-b border-gray-200';
+            newRow.setAttribute('data-grade', rowCount);
+            newRow.innerHTML = `
+                <td class="px-4 py-2"><input type="text" class="grade-input w-20 px-2 py-1 border border-gray-300 rounded text-sm text-center" value="等级${rowCount}"></td>
+                <td class="px-4 py-2"><input type="number" class="score-value-input w-16 px-2 py-1 border border-gray-300 rounded text-sm text-center font-medium" value="${100 - (rowCount - 1) * 5}"></td>
+                <td class="px-4 py-2"><input type="text" class="score-input" value="0"></td>
+                <td class="px-4 py-2"><input type="text" class="score-input" value="0"></td>
+                <td class="px-4 py-2"><input type="text" class="score-input" value="0"></td>
+                <td class="px-4 py-2"><input type="text" class="score-input" value="0"></td>
+                <td class="px-4 py-2"><input type="text" class="score-input" value="0"></td>
+                <td class="px-4 py-2"><input type="text" class="score-input" value="0"></td>
+                <td class="px-4 py-2 text-center">
+                    <button onclick="editGradeRow(this)" class="px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 rounded mr-1" title="编辑">
+                        <i data-lucide="edit-2" class="w-3 h-3 inline"></i>
+                    </button>
+                    <button onclick="deleteGradeRow(this)" class="px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded" title="删除">
+                        <i data-lucide="trash-2" class="w-3 h-3 inline"></i>
+                    </button>
+                </td>
+            `;
+            
+            tbody.appendChild(newRow);
+            lucide.createIcons();
+            
+            // 滚动到新行
+            newRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        // 删除等级行
+        function deleteGradeRow(btn) {
+            const row = btn.closest('tr');
+            const gradeName = row.querySelector('.grade-input').value;
+            const scoreValue = row.querySelector('.score-value-input').value;
+            
+            if (confirm(`确认删除等级【${gradeName}】（评分：${scoreValue}）吗？`)) {
+                row.remove();
+            }
+        }
+        
+        // 编辑等级行（切换编辑模式）
+        function editGradeRow(btn) {
+            const row = btn.closest('tr');
+            const gradeInput = row.querySelector('.grade-input');
+            const scoreInput = row.querySelector('.score-value-input');
+            
+            // 切换禁用状态
+            const isDisabled = gradeInput.disabled;
+            gradeInput.disabled = !isDisabled;
+            scoreInput.disabled = !isDisabled;
+            
+            if (!isDisabled) {
+                // 进入编辑模式
+                gradeInput.focus();
+                gradeInput.select();
+                btn.innerHTML = '<i data-lucide="check" class="w-3 h-3 inline"></i>';
+                btn.classList.remove('text-blue-600', 'hover:bg-blue-50');
+                btn.classList.add('text-green-600', 'hover:bg-green-50');
+            } else {
+                // 退出编辑模式
+                btn.innerHTML = '<i data-lucide="edit-2" class="w-3 h-3 inline"></i>';
+                btn.classList.remove('text-green-600', 'hover:bg-green-50');
+                btn.classList.add('text-blue-600', 'hover:bg-blue-50');
+            }
+            
+            lucide.createIcons();
+        }
+        
+        // 点击背景关闭弹窗
+        document.getElementById('detailModal').addEventListener('click', function(e) {
+            if (e.target === this || e.target.classList.contains('overflow-y-auto')) {
+                closeModal();
+            }
+        });
+        
+        // 点击背景关闭新增弹窗
+        document.getElementById('addModal').addEventListener('click', function(e) {
+            if (e.target === this || e.target.classList.contains('overflow-y-auto')) {
+                closeAddModal();
+            }
+        });
+    </script>
+</body>
+</html>
