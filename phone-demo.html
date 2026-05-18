@@ -1148,29 +1148,67 @@
                                             </div>
                                         </div>
                                         <div class="rounded-lg p-3 relative overflow-hidden" style="background: linear-gradient(135deg, rgba(8,25,50,0.6) 0%, rgba(6,18,40,0.7) 100%); border: 1px solid rgba(34,211,238,0.2); box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);">
-                                            <div class="text-xs mb-2 text-center tracking-wider" style="color: rgba(34,211,238,0.9);">人均运动时长(时)</div>
-                                            <svg viewBox="0 0 300 180" class="w-full h-full">
-                                                <defs>
-                                                    <linearGradient id="cyanGrad" x1="0" y1="1" x2="0" y2="0">
-                                                        <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:0.8"/>
-                                                        <stop offset="100%" style="stop-color:#22d3ee;stop-opacity:1"/>
-                                                    </linearGradient>
-                                                </defs>
-                                                <g fill="rgba(255,255,255,0.03)">
-                                                    <line x1="30" y1="20" x2="280" y2="20"/><line x1="30" y1="60" x2="280" y2="60"/>
-                                                    <line x1="30" y1="100" x2="280" y2="100"/><line x1="30" y1="140" x2="280" y2="140"/>
-                                                </g>
-                                                <rect x="50" y="70" width="35" height="70" fill="url(#cyanGrad)" rx="2"/><text x="67" y="66" fill="#fff" font-size="9" text-anchor="middle" style="font-weight: bold;">9.2</text>
-                                                <rect x="120" y="85" width="35" height="55" fill="url(#cyanGrad)" rx="2"/><text x="137" y="81" fill="#fff" font-size="9" text-anchor="middle" style="font-weight: bold;">7.8</text>
-                                                <rect x="190" y="75" width="35" height="65" fill="url(#cyanGrad)" rx="2"/><text x="207" y="71" fill="#fff" font-size="9" text-anchor="middle" style="font-weight: bold;">8.5</text>
-                                                <text x="67" y="155" fill="rgba(255,255,255,0.6)" font-size="9" text-anchor="middle">一</text>
-                                                <text x="137" y="155" fill="rgba(255,255,255,0.6)" font-size="9" text-anchor="middle">二</text>
-                                                <text x="207" y="155" fill="rgba(255,255,255,0.6)" font-size="9" text-anchor="middle">三</text>
-                                                <text x="7" y="24" fill="rgba(34,211,238,0.7)" font-size="8">12</text>
-                                                <text x="7" y="64" fill="rgba(34,211,238,0.7)" font-size="8">8</text>
-                                                <text x="7" y="104" fill="rgba(34,211,238,0.7)" font-size="8">4</text>
-                                                <text x="7" y="144" fill="rgba(34,211,238,0.7)" font-size="8">0</text>
-                                            </svg>
+                                            <div class="flex items-center justify-between mb-2">
+                                                <div class="text-xs tracking-wider" style="color: rgba(34,211,238,0.9);">人均运动时长(时)</div>
+                                                <div class="flex gap-1">
+                                                    <button onclick="switchDurationDimension('grade')" id="btn-dimension-grade" class="px-2 py-0.5 text-[9px] rounded transition-all" style="background: rgba(34,211,238,0.3); color: #22d3ee; border: 1px solid rgba(34,211,238,0.5);">按年级</button>
+                                                    <button onclick="switchDurationDimension('project')" id="btn-dimension-project" class="px-2 py-0.5 text-[9px] rounded transition-all" style="background: rgba(34,211,238,0.1); color: rgba(34,211,238,0.6); border: 1px solid rgba(34,211,238,0.3);">按项目</button>
+                                                </div>
+                                            </div>
+                                            <div id="chart-duration-grade">
+                                                <svg viewBox="0 0 300 180" class="w-full h-full">
+                                                    <defs>
+                                                        <linearGradient id="cyanGrad" x1="0" y1="1" x2="0" y2="0">
+                                                            <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:0.8"/>
+                                                            <stop offset="100%" style="stop-color:#22d3ee;stop-opacity:1"/>
+                                                        </linearGradient>
+                                                    </defs>
+                                                    <g fill="rgba(255,255,255,0.03)">
+                                                        <line x1="30" y1="20" x2="280" y2="20"/><line x1="30" y1="60" x2="280" y2="60"/>
+                                                        <line x1="30" y1="100" x2="280" y2="100"/><line x1="30" y1="140" x2="280" y2="140"/>
+                                                    </g>
+                                                    <rect x="50" y="70" width="35" height="70" fill="url(#cyanGrad)" rx="2"/><text x="67" y="66" fill="#fff" font-size="9" text-anchor="middle" style="font-weight: bold;">9.2</text>
+                                                    <rect x="120" y="85" width="35" height="55" fill="url(#cyanGrad)" rx="2"/><text x="137" y="81" fill="#fff" font-size="9" text-anchor="middle" style="font-weight: bold;">7.8</text>
+                                                    <rect x="190" y="75" width="35" height="65" fill="url(#cyanGrad)" rx="2"/><text x="207" y="71" fill="#fff" font-size="9" text-anchor="middle" style="font-weight: bold;">8.5</text>
+                                                    <text x="67" y="155" fill="rgba(255,255,255,0.6)" font-size="9" text-anchor="middle">一</text>
+                                                    <text x="137" y="155" fill="rgba(255,255,255,0.6)" font-size="9" text-anchor="middle">二</text>
+                                                    <text x="207" y="155" fill="rgba(255,255,255,0.6)" font-size="9" text-anchor="middle">三</text>
+                                                    <text x="7" y="24" fill="rgba(34,211,238,0.7)" font-size="8">12</text>
+                                                    <text x="7" y="64" fill="rgba(34,211,238,0.7)" font-size="8">8</text>
+                                                    <text x="7" y="104" fill="rgba(34,211,238,0.7)" font-size="8">4</text>
+                                                    <text x="7" y="144" fill="rgba(34,211,238,0.7)" font-size="8">0</text>
+                                                </svg>
+                                            </div>
+                                            <div id="chart-duration-project" style="display: none;">
+                                                <svg viewBox="0 0 300 180" class="w-full h-full">
+                                                    <defs>
+                                                        <linearGradient id="cyanGrad2" x1="0" y1="1" x2="0" y2="0">
+                                                            <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:0.8"/>
+                                                            <stop offset="100%" style="stop-color:#22d3ee;stop-opacity:1"/>
+                                                        </linearGradient>
+                                                    </defs>
+                                                    <g fill="rgba(255,255,255,0.03)">
+                                                        <line x1="30" y1="20" x2="280" y2="20"/><line x1="30" y1="60" x2="280" y2="60"/>
+                                                        <line x1="30" y1="100" x2="280" y2="100"/><line x1="30" y1="140" x2="280" y2="140"/>
+                                                    </g>
+                                                    <rect x="45" y="60" width="25" height="80" fill="url(#cyanGrad2)" rx="2"/><text x="57" y="56" fill="#fff" font-size="8" text-anchor="middle" style="font-weight: bold;">10.5</text>
+                                                    <rect x="80" y="80" width="25" height="60" fill="url(#cyanGrad2)" rx="2"/><text x="92" y="76" fill="#fff" font-size="8" text-anchor="middle" style="font-weight: bold;">8.2</text>
+                                                    <rect x="115" y="70" width="25" height="70" fill="url(#cyanGrad2)" rx="2"/><text x="127" y="66" fill="#fff" font-size="8" text-anchor="middle" style="font-weight: bold;">9.1</text>
+                                                    <rect x="150" y="90" width="25" height="50" fill="url(#cyanGrad2)" rx="2"/><text x="162" y="86" fill="#fff" font-size="8" text-anchor="middle" style="font-weight: bold;">6.8</text>
+                                                    <rect x="185" y="75" width="25" height="65" fill="url(#cyanGrad2)" rx="2"/><text x="197" y="71" fill="#fff" font-size="8" text-anchor="middle" style="font-weight: bold;">8.9</text>
+                                                    <rect x="220" y="85" width="25" height="55" fill="url(#cyanGrad2)" rx="2"/><text x="232" y="81" fill="#fff" font-size="8" text-anchor="middle" style="font-weight: bold;">7.5</text>
+                                                    <text x="57" y="155" fill="rgba(255,255,255,0.6)" font-size="7" text-anchor="middle">跳绳</text>
+                                                    <text x="92" y="155" fill="rgba(255,255,255,0.6)" font-size="7" text-anchor="middle">跳远</text>
+                                                    <text x="127" y="155" fill="rgba(255,255,255,0.6)" font-size="7" text-anchor="middle">跑步</text>
+                                                    <text x="162" y="155" fill="rgba(255,255,255,0.6)" font-size="7" text-anchor="middle">仰卧</text>
+                                                    <text x="197" y="155" fill="rgba(255,255,255,0.6)" font-size="7" text-anchor="middle">体前屈</text>
+                                                    <text x="232" y="155" fill="rgba(255,255,255,0.6)" font-size="7" text-anchor="middle">肺活量</text>
+                                                    <text x="7" y="24" fill="rgba(34,211,238,0.7)" font-size="8">12</text>
+                                                    <text x="7" y="64" fill="rgba(34,211,238,0.7)" font-size="8">8</text>
+                                                    <text x="7" y="104" fill="rgba(34,211,238,0.7)" font-size="8">4</text>
+                                                    <text x="7" y="144" fill="rgba(34,211,238,0.7)" font-size="8">0</text>
+                                                </svg>
+                                            </div>
                                             <div class="flex justify-center gap-2 text-[9px] mt-1">
                                                 <span style="color: rgba(34,211,238,0.8);"><span class="inline-block w-2 h-2 rounded-sm mr-1" style="background: #22d3ee;"></span>人均时长</span>
                                             </div>
@@ -1561,6 +1599,42 @@
         function showHistoryReport() {
             alert('查看历史测试报告详情');
             // TODO: 可以打开新的页面显示历史报告详情
+        }
+        
+        // 切换人均运动时长维度
+        function switchDurationDimension(dimension) {
+            const gradeChart = document.getElementById('chart-duration-grade');
+            const projectChart = document.getElementById('chart-duration-project');
+            const btnGrade = document.getElementById('btn-dimension-grade');
+            const btnProject = document.getElementById('btn-dimension-project');
+            
+            if (dimension === 'grade') {
+                // 显示年级维度
+                gradeChart.style.display = 'block';
+                projectChart.style.display = 'none';
+                
+                // 更新按钮样式
+                btnGrade.style.background = 'rgba(34,211,238,0.3)';
+                btnGrade.style.color = '#22d3ee';
+                btnGrade.style.border = '1px solid rgba(34,211,238,0.5)';
+                
+                btnProject.style.background = 'rgba(34,211,238,0.1)';
+                btnProject.style.color = 'rgba(34,211,238,0.6)';
+                btnProject.style.border = '1px solid rgba(34,211,238,0.3)';
+            } else {
+                // 显示项目维度
+                gradeChart.style.display = 'none';
+                projectChart.style.display = 'block';
+                
+                // 更新按钮样式
+                btnProject.style.background = 'rgba(34,211,238,0.3)';
+                btnProject.style.color = '#22d3ee';
+                btnProject.style.border = '1px solid rgba(34,211,238,0.5)';
+                
+                btnGrade.style.background = 'rgba(34,211,238,0.1)';
+                btnGrade.style.color = 'rgba(34,211,238,0.6)';
+                btnGrade.style.border = '1px solid rgba(34,211,238,0.3)';
+            }
         }
         
         // 显示家校端测试报告详情
